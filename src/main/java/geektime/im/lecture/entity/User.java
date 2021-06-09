@@ -11,6 +11,7 @@ public class User {
     private String username;
     private String password;
     private String email;
+    private String avatar;
 
     public String getAvatar() {
         return avatar;
@@ -20,7 +21,6 @@ public class User {
         this.avatar = avatar;
     }
 
-    private String avatar;
 
     public String getPassword() {
         return password;

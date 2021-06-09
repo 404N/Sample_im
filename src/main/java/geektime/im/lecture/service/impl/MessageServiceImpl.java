@@ -92,8 +92,10 @@ public class MessageServiceImpl implements MessageService {
         contactRepository.save(messageContactRecipient);
 
         /**更未读更新 */
-        redisTemplate.opsForValue().increment(recipientUid + "_T", 1); //加总未读
-        redisTemplate.opsForHash().increment(recipientUid + "_C", senderUid, 1); //加会话未读
+        //加总未读
+        redisTemplate.opsForValue().increment(recipientUid + "_T", 1);
+        //加会话未读
+        redisTemplate.opsForHash().increment(recipientUid + "_C", senderUid, 1);
 
         /** 待推送消息发布到redis */
         User self = userRepository.findById(senderUid).orElse(null);
@@ -160,7 +162,7 @@ public class MessageServiceImpl implements MessageService {
             }
 
             MessageContactVO contactVO = new MessageContactVO(user.getUid(), user.getUsername(), user.getAvatar(), totalUnread);
-            contacts.stream().forEach(contact -> {
+            contacts.forEach(contact -> {
                 Long mid = contact.getMid();
                 MessageContent contentVO = contentRepository.findById(mid).orElse(null);
                 User otherUser = userRepository.findById(contact.getOtherUid()).orElse(null);

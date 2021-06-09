@@ -85,7 +85,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     long senderUid = data.getLong("senderUid");
                     long recipientUid = data.getLong("recipientUid");
                     String content = data.getString("content");
-                    int msgType     = data.getIntValue("msgType");
+                    int msgType = data.getIntValue("msgType");
                     MessageVO messageContent = messageService.sendNewMsg(senderUid, recipientUid, content, msgType);
                     if (messageContent != null) {
                         JSONObject jsonObject = new JSONObject();
@@ -185,7 +185,8 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
      */
     private void checkAndResend(Channel channel, JSONObject msgJson) {
         long tid = msgJson.getLong("tid");
-        int tryTimes = 2;//重推2次
+        //重推2次
+        int tryTimes = 2;
         while (tryTimes > 0) {
             if (channel.attr(NON_ACKED_MAP).get().containsKey(tid) && tryTimes > 0) {
                 channel.writeAndFlush(new TextWebSocketFrame(msgJson.toJSONString()));
