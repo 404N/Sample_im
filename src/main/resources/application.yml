@@ -7,14 +7,6 @@ spring:
     username: root
     password: 123456
 
-
-  jpa:
-    database: mysql
-    show-sql: true
-    hibernate:
-      ddl-auto: update
-      use-new-id-generator-mappings: true
-
   redis:
     host: localhost
     port: 6379
@@ -33,6 +25,11 @@ spring:
         # #连接池最大阻塞等待时间（使用负值表示没有限制）
         max-wait: -1ms
 
+mybatis:
+  mapper-locations: classpath:mapper/*.xml,classpath:mapper/*/*.xml
+  type-aliases-package: geektime.im.lecture.entity
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 websocket:
   connector:

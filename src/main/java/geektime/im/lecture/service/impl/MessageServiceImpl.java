@@ -3,10 +3,10 @@ package geektime.im.lecture.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import geektime.im.lecture.Constants;
-import geektime.im.lecture.dao.MessageContactRepository;
-import geektime.im.lecture.dao.MessageContentRepository;
-import geektime.im.lecture.dao.MessageRelationRepository;
-import geektime.im.lecture.dao.UserRepository;
+import geektime.im.lecture.dao.ImMsgContactMapper;
+import geektime.im.lecture.dao.ImMsgContentMapper;
+import geektime.im.lecture.dao.ImMsgRelationMapper;
+import geektime.im.lecture.dao.ImUserMapper;
 import geektime.im.lecture.entity.*;
 import geektime.im.lecture.service.MessageService;
 import geektime.im.lecture.vo.MessageContactVO;
@@ -22,74 +22,74 @@ import java.util.List;
 public class MessageServiceImpl implements MessageService {
 
     @Autowired
-    private MessageContentRepository contentRepository;
+    private ImMsgContentMapper contentRepository;
     @Autowired
-    private MessageRelationRepository relationRepository;
+    private ImMsgRelationMapper relationRepository;
     @Autowired
-    private MessageContactRepository contactRepository;
+    private ImMsgContactMapper contactRepository;
     @Autowired
-    private UserRepository userRepository;
+    private ImUserMapper userRepository;
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Override
-    public MessageVO sendNewMsg(long senderUid, long recipientUid, String content, int msgType) {
+    public MessageVO sendNewMsg(Integer senderUid, Integer recipientUid, String content, Integer msgType) {
         Date currentTime = new Date();
         /**存内容*/
-        MessageContent messageContent = new MessageContent();
+        ImMsgContent messageContent = new ImMsgContent();
         messageContent.setSenderId(senderUid);
         messageContent.setRecipientId(recipientUid);
         messageContent.setContent(content);
         messageContent.setMsgType(msgType);
         messageContent.setCreateTime(currentTime);
-        messageContent = contentRepository.saveAndFlush(messageContent);
-        Long mid = messageContent.getMid();
+        Integer mid=contentRepository.insertGetMid(messageContent);
+        messageContent.setMid(mid);
 
         /**存发件人的发件箱*/
-        MessageRelation messageRelationSender = new MessageRelation();
+        ImMsgRelation messageRelationSender = new ImMsgRelation();
         messageRelationSender.setMid(mid);
         messageRelationSender.setOwnerUid(senderUid);
         messageRelationSender.setOtherUid(recipientUid);
         messageRelationSender.setType(0);
         messageRelationSender.setCreateTime(currentTime);
-        relationRepository.save(messageRelationSender);
+        relationRepository.insert(messageRelationSender);
 
         /**存收件人的收件箱*/
-        MessageRelation messageRelationRecipient = new MessageRelation();
+        ImMsgRelation messageRelationRecipient = new ImMsgRelation();
         messageRelationRecipient.setMid(mid);
         messageRelationRecipient.setOwnerUid(recipientUid);
         messageRelationRecipient.setOtherUid(senderUid);
         messageRelationRecipient.setType(1);
         messageRelationRecipient.setCreateTime(currentTime);
-        relationRepository.save(messageRelationRecipient);
+        relationRepository.insert(messageRelationRecipient);
 
         /**更新发件人的最近联系人 */
-        MessageContact messageContactSender = contactRepository.findById(new ContactMultiKeys(senderUid, recipientUid)).orElse(null);
+        ImMsgContact messageContactSender = contactRepository.findMsgByOwnerIdAndOtherId(senderUid, recipientUid);
         if (messageContactSender != null) {
             messageContactSender.setMid(mid);
         } else {
-            messageContactSender = new MessageContact();
+            messageContactSender = new ImMsgContact();
             messageContactSender.setOwnerUid(senderUid);
             messageContactSender.setOtherUid(recipientUid);
             messageContactSender.setMid(mid);
             messageContactSender.setCreateTime(currentTime);
             messageContactSender.setType(0);
         }
-        contactRepository.save(messageContactSender);
+        contactRepository.insert(messageContactSender);
 
         /**更新收件人的最近联系人 */
-        MessageContact messageContactRecipient = contactRepository.findById(new ContactMultiKeys(recipientUid, senderUid)).orElse(null);
+        ImMsgContact messageContactRecipient = contactRepository.findMsgByOwnerIdAndOtherId(recipientUid, senderUid);
         if (messageContactRecipient != null) {
             messageContactRecipient.setMid(mid);
         } else {
-            messageContactRecipient = new MessageContact();
+            messageContactRecipient = new ImMsgContact();
             messageContactRecipient.setOwnerUid(recipientUid);
             messageContactRecipient.setOtherUid(senderUid);
             messageContactRecipient.setMid(mid);
             messageContactRecipient.setCreateTime(currentTime);
             messageContactRecipient.setType(1);
         }
-        contactRepository.save(messageContactRecipient);
+        contactRepository.insert(messageContactRecipient);
 
         /**更未读更新 */
         //加总未读
@@ -98,8 +98,8 @@ public class MessageServiceImpl implements MessageService {
         redisTemplate.opsForHash().increment(recipientUid + "_C", senderUid, 1);
 
         /** 待推送消息发布到redis */
-        User self = userRepository.findById(senderUid).orElse(null);
-        User other = userRepository.findById(recipientUid).orElse(null);
+        ImUser self = userRepository.findByUid(senderUid);
+        ImUser other = userRepository.findByUid(recipientUid);
         MessageVO messageVO = new MessageVO(mid, content, self.getUid(), messageContactSender.getType(), other.getUid(), messageContent.getCreateTime(), self.getAvatar(), other.getAvatar(), self.getUsername(), other.getUsername());
         redisTemplate.convertAndSend(Constants.WEBSOCKET_MSG_TOPIC, JSONObject.toJSONString(messageVO));
 
@@ -107,26 +107,26 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageVO> queryConversationMsg(long ownerUid, long otherUid) {
-        List<MessageRelation> relationList = relationRepository.findAllByOwnerUidAndOtherUidOrderByMidAsc(ownerUid, otherUid);
+    public List<MessageVO> queryConversationMsg(Integer ownerUid, Integer otherUid) {
+        List<ImMsgRelation> relationList = relationRepository.findAllByOwnerUidAndOtherUidOrderByMidAsc(ownerUid, otherUid);
         return composeMessageVO(relationList, ownerUid, otherUid);
     }
 
     @Override
-    public List<MessageVO> queryNewerMsgFrom(long ownerUid, long otherUid, long fromMid) {
-        List<MessageRelation> relationList = relationRepository.findAllByOwnerUidAndOtherUidAndMidIsGreaterThanOrderByMidAsc(ownerUid, otherUid, fromMid);
+    public List<MessageVO> queryNewerMsgFrom(Integer ownerUid, Integer otherUid, Integer fromMid) {
+        List<ImMsgRelation> relationList = relationRepository.findAllByOwnerUidAndOtherUidSinceMid(ownerUid, otherUid, fromMid);
         return composeMessageVO(relationList, ownerUid, otherUid);
     }
 
-    private List<MessageVO> composeMessageVO(List<MessageRelation> relationList, long ownerUid, long otherUid) {
+    private List<MessageVO> composeMessageVO(List<ImMsgRelation> relationList, Integer ownerUid, Integer otherUid) {
         if (null != relationList && !relationList.isEmpty()) {
             /** 先拼接消息索引和内容 */
             List<MessageVO> msgList = Lists.newArrayList();
-            User self = userRepository.findById(ownerUid).orElse(null);
-            User other = userRepository.findById(otherUid).orElse(null);
+            ImUser self = userRepository.findByUid(ownerUid);
+            ImUser other = userRepository.findByUid(otherUid);
             relationList.stream().forEach(relation -> {
-                Long mid = relation.getMid();
-                MessageContent contentVO = contentRepository.findById(mid).orElse(null);
+                Integer mid = relation.getMid();
+                ImMsgContent contentVO = contentRepository.findByMid(mid);
                 if (null != contentVO) {
                     String content = contentVO.getContent();
                     MessageVO messageVO = new MessageVO(mid, content, relation.getOwnerUid(), relation.getType(), relation.getOtherUid(), relation.getCreateTime(), self.getAvatar(), other.getAvatar(), self.getUsername(), other.getUsername());
@@ -151,27 +151,27 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageContactVO queryContacts(long ownerUid) {
-        List<MessageContact> contacts = contactRepository.findMessageContactsByOwnerUidOrderByMidDesc(ownerUid);
+    public MessageContactVO queryContacts(Integer ownerUid) {
+        List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUid);
         if (contacts != null) {
-            User user = userRepository.findById(ownerUid).orElse(null);
-            long totalUnread = 0;
+            ImUser user = userRepository.findByUid(ownerUid);
+            Integer totalUnread = 0;
             Object totalUnreadObj = redisTemplate.opsForValue().get(user.getUid() + Constants.TOTAL_UNREAD_SUFFIX);
             if (null != totalUnreadObj) {
-                totalUnread = Long.parseLong((String) totalUnreadObj);
+                totalUnread = Integer.parseInt((String) totalUnreadObj);
             }
 
             MessageContactVO contactVO = new MessageContactVO(user.getUid(), user.getUsername(), user.getAvatar(), totalUnread);
             contacts.forEach(contact -> {
-                Long mid = contact.getMid();
-                MessageContent contentVO = contentRepository.findById(mid).orElse(null);
-                User otherUser = userRepository.findById(contact.getOtherUid()).orElse(null);
+                Integer mid = contact.getMid();
+                ImMsgContent contentVO = contentRepository.findByMid(mid);
+                ImUser otherUser = userRepository.findByUid(contact.getOtherUid());
 
                 if (null != contentVO) {
-                    long convUnread = 0;
+                    Integer convUnread = 0;
                     Object convUnreadObj = redisTemplate.opsForHash().get(user.getUid() + Constants.CONVERSION_UNREAD_SUFFIX, otherUser.getUid());
                     if (null != convUnreadObj) {
-                        convUnread = Long.parseLong((String) convUnreadObj);
+                        convUnread = Integer.parseInt((String) convUnreadObj);
                     }
                     MessageContactVO.ContactInfo contactInfo = contactVO.new ContactInfo(otherUser.getUid(), otherUser.getUsername(), otherUser.getAvatar(), mid, contact.getType(), contentVO.getContent(), convUnread, contact.getCreateTime());
                     contactVO.appendContact(contactInfo);
@@ -183,11 +183,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public long queryTotalUnread(long ownerUid) {
-        long totalUnread = 0;
+    public Integer queryTotalUnread(Integer ownerUid) {
+        Integer totalUnread = 0;
         Object totalUnreadObj = redisTemplate.opsForValue().get(ownerUid + Constants.TOTAL_UNREAD_SUFFIX);
         if (null != totalUnreadObj) {
-            totalUnread = Long.parseLong((String) totalUnreadObj);
+            totalUnread = Integer.parseInt((String) totalUnreadObj);
         }
         return totalUnread;
     }

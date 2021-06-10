@@ -1,17 +1,19 @@
 package geektime.im.lecture.service;
 
-import geektime.im.lecture.entity.User;
+import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.vo.MessageContactVO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface UserService {
 
-    User login(String email, String password);
+    ImUser login(String email, String password);
 
-    List<User> getAllUsersExcept(long exceptUid);
+    List<ImUser> getAllUsersExcept(Integer exceptUid);
 
-    List<User> getAllUsersExcept(User exceptUser);
+    List<ImUser> getAllUsersExcept(ImUser exceptUser);
 
-    MessageContactVO getContacts(User ownerUser);
+    MessageContactVO getContacts(ImUser ownerUser);
 }

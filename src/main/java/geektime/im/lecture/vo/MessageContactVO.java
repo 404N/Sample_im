@@ -6,13 +6,13 @@ import java.util.Date;
 import java.util.List;
 
 public class MessageContactVO {
-    private Long ownerUid;
+    private Integer ownerUid;
     private String ownerAvatar;
     private String ownerName;
-    private Long totalUnread;
+    private Integer totalUnread;
     private List<ContactInfo> contactInfoList;
 
-    public MessageContactVO(Long ownerUid, String ownerName, String ownerAvatar, Long totalUnread) {
+    public MessageContactVO(Integer ownerUid, String ownerName, String ownerAvatar, Integer totalUnread) {
         this.ownerUid = ownerUid;
         this.ownerAvatar = ownerAvatar;
         this.ownerName = ownerName;
@@ -20,21 +20,21 @@ public class MessageContactVO {
     }
 
     public class ContactInfo {
-        private Long otherUid;
+        private Integer otherUid;
         private String otherName;
         private String otherAvatar;
-        private Long mid;
+        private Integer mid;
         private Integer type;
         private String content;
 
-        public Long getConvUnread() {
+        public Integer getConvUnread() {
             return convUnread;
         }
 
-        private Long convUnread;
+        private Integer convUnread;
         private Date createTime;
 
-        public ContactInfo(Long otherUid, String otherName, String otherAvatar, Long mid, Integer type, String content, Long convUnread, Date createTime) {
+        public ContactInfo(Integer otherUid, String otherName, String otherAvatar, Integer mid, Integer type, String content, Integer convUnread, Date createTime) {
             this.otherUid = otherUid;
             this.otherName = otherName;
             this.otherAvatar = otherAvatar;
@@ -45,11 +45,11 @@ public class MessageContactVO {
             this.createTime = createTime;
         }
 
-        public Long getOtherUid() {
+        public Integer getOtherUid() {
             return otherUid;
         }
 
-        public Long getMid() {
+        public Integer getMid() {
             return mid;
         }
 
@@ -86,7 +86,7 @@ public class MessageContactVO {
         contactInfoList.add(contactInfo);
     }
 
-    public Long getOwnerUid() {
+    public Integer getOwnerUid() {
         return ownerUid;
     }
 
@@ -98,7 +98,7 @@ public class MessageContactVO {
         return ownerName;
     }
 
-    public Long getTotalUnread() {
+    public Integer getTotalUnread() {
         return totalUnread;
     }
 

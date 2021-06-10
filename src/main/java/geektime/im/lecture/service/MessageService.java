@@ -1,12 +1,13 @@
 package geektime.im.lecture.service;
 
 
-import geektime.im.lecture.entity.MessageContent;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.MessageVO;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public interface MessageService {
 
     /**
@@ -18,7 +19,7 @@ public interface MessageService {
      * @param msgType
      * @return
      */
-    MessageVO sendNewMsg(long senderUid, long recipientUid, String content, int msgType);
+    MessageVO sendNewMsg(Integer senderUid, Integer recipientUid, String content, Integer msgType);
 
     /**
      * 查两人的历史消息
@@ -26,7 +27,7 @@ public interface MessageService {
      * @param otherUid
      * @return
      */
-    List<MessageVO> queryConversationMsg(long ownerUid, long otherUid);
+    List<MessageVO> queryConversationMsg(Integer ownerUid, Integer otherUid);
 
     /**
      * 查询两人从某一条消息开始的新消息
@@ -35,19 +36,19 @@ public interface MessageService {
      * @param fromMid
      * @return
      */
-    List<MessageVO> queryNewerMsgFrom(long ownerUid, long otherUid, long fromMid);
+    List<MessageVO> queryNewerMsgFrom(Integer ownerUid, Integer otherUid, Integer fromMid);
 
     /**
      * 查询某个用户的最近联系人
      * @param ownerUid
      * @return
      */
-    MessageContactVO queryContacts(long ownerUid);
+    MessageContactVO queryContacts(Integer ownerUid);
 
     /**
      * 查询某人总未读
      * @param ownerUid
      * @return
      */
-    long queryTotalUnread(long ownerUid);
+    Integer queryTotalUnread(Integer ownerUid);
 }

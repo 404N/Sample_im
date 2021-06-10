@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="geektime.im.lecture.dao.ImMsgRelationMapper" >
+  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImMsgRelation" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="owner_uid" property="ownerUid" jdbcType="INTEGER" />
+    <id column="mid" property="mid" jdbcType="INTEGER" />
+    <result column="other_uid" property="otherUid" jdbcType="INTEGER" />
+    <result column="type" property="type" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="findAllByOwnerUidAndOtherUidOrderByMidAsc"
+            resultType="geektime.im.lecture.entity.ImMsgRelation">
+    select *
+    from im_msg_relation
+    where owner_uid=#{ownerUid,jdbcType=INTEGER} and
+          other_uid=#{otherUid,jdbcType=INTEGER}
+    order by mid
+  </select>
+  <select id="findAllByOwnerUidAndOtherUidSinceMid" resultType="geektime.im.lecture.entity.ImMsgRelation">
+    select *
+    from im_msg_relation
+    where owner_uid=#{ownerUid,jdbcType=INTEGER} and
+          other_uid=#{otherUid,jdbcType=INTEGER} and
+          <![CDATA[ mid>#{lastMid,jdbcType=INTEGER} ]]>
+    order by mid
+  </select>
+</mapper>

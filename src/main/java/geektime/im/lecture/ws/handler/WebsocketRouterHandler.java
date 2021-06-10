@@ -67,8 +67,8 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     break;
                 case 2:
                     //查询消息
-                    long ownerUid = data.getLong("ownerUid");
-                    long otherUid = data.getLong("otherUid");
+                    Integer ownerUid = data.getInteger("ownerUid");
+                    Integer otherUid = data.getInteger("otherUid");
                     List<MessageVO> messageVO = messageService.queryConversationMsg(ownerUid, otherUid);
                     String msgs = "";
                     if (messageVO != null) {
@@ -82,8 +82,8 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case 3:
                     //发消息
-                    long senderUid = data.getLong("senderUid");
-                    long recipientUid = data.getLong("recipientUid");
+                    Integer senderUid = data.getInteger("senderUid");
+                    Integer recipientUid = data.getInteger("recipientUid");
                     String content = data.getString("content");
                     int msgType = data.getIntValue("msgType");
                     MessageVO messageContent = messageService.sendNewMsg(senderUid, recipientUid, content, msgType);
@@ -97,7 +97,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case 5:
                     //查总未读
-                    long unreadOwnerUid = data.getLong("uid");
+                    Integer unreadOwnerUid = data.getInteger("uid");
                     long totalUnread = messageService.queryTotalUnread(unreadOwnerUid);
                     ctx.writeAndFlush(new TextWebSocketFrame("{\"type\":5,\"data\":{\"unread\":" + totalUnread + "}}"));
                     break;

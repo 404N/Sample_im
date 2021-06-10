@@ -1,27 +1,28 @@
 package geektime.im.lecture.vo;
 
-import geektime.im.lecture.entity.User;
+
+import geektime.im.lecture.entity.ImUser;
 
 import java.util.List;
 
 public class LoginResVo {
-    private User loginUser;
-    private List<User> otherUsers;
+    private ImUser loginUser;
+    private List<ImUser> otherUsers;
     private MessageContactVO contactVO;
 
-    public User getLoginUser() {
+    public ImUser getLoginUser() {
         return loginUser;
     }
 
-    public void setLoginUser(User loginUser) {
+    public void setLoginUser(ImUser loginUser) {
         this.loginUser = loginUser;
     }
 
-    public List<User> getOtherUsers() {
+    public List<ImUser> getOtherUsers() {
         return otherUsers;
     }
 
-    public void setOtherUsers(List<User> otherUsers) {
+    public void setOtherUsers(List<ImUser> otherUsers) {
         this.otherUsers = otherUsers;
     }
 

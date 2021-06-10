@@ -1,7 +1,7 @@
 package geektime.im.lecture.service.impl;
 
-import geektime.im.lecture.dao.GroupInfoRepository;
-import geektime.im.lecture.entity.GroupInfo;
+import geektime.im.lecture.dao.ImGroupInfoMapper;
+import geektime.im.lecture.entity.ImGroupInfo;
 import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.vo.GroupVo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,19 +14,19 @@ import java.util.List;
 public class GroupServiceImpl implements GroupService {
 
     @Autowired
-    private GroupInfoRepository groupInfoRepository;
+    private ImGroupInfoMapper groupInfoRepository;
 
     @Override
-    public void createGroup(Long userId, String groupName) {
-        GroupInfo groupInfo=new GroupInfo();
+    public void createGroup(Integer userId, String groupName) {
+        ImGroupInfo groupInfo=new ImGroupInfo();
         groupInfo.setGroupUserId(userId);
         groupInfo.setGroupName(groupName);
         groupInfo.setCreateTime(new Date());
-        groupInfoRepository.save(groupInfo);
+        groupInfoRepository.insert(groupInfo);
     }
 
     @Override
     public List<GroupVo> queryGroup(String groupName) {
-        return groupInfoRepository.queryGroup(groupName);
+        return groupInfoRepository.queryGroupByName(groupName);
     }
 }

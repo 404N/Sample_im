@@ -1,11 +1,6 @@
 package geektime.im.lecture.controller;
 
-import geektime.im.lecture.Constants;
-import geektime.im.lecture.entity.User;
-import geektime.im.lecture.exceptions.BaseException;
-import geektime.im.lecture.exceptions.InvalidUserInfoException;
-import geektime.im.lecture.exceptions.UserNotExistException;
-import geektime.im.lecture.response.CommonEnum;
+import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.response.ResultBody;
 import geektime.im.lecture.response.ResultUtil;
 import geektime.im.lecture.service.UserService;
@@ -31,69 +26,18 @@ public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
 
-    @GetMapping(path = "/")
-    public String welcomePage(@RequestParam(name = "username", required = false)
-                                      String username, HttpSession session) {
-        if (session.getAttribute(Constants.SESSION_KEY) != null) {
-            return "index";
-        } else {
-            return "login";
-        }
-    }
-
-    @RequestMapping(path = "/login")
-    public String login(@RequestParam String email, @RequestParam String password, Model model, HttpSession session) {
-        try {
-            User loginUser = userService.login(email, password);
-            model.addAttribute("loginUser", loginUser);
-            session.setAttribute(Constants.SESSION_KEY, loginUser);
-
-            List<User> otherUsers = userService.getAllUsersExcept(loginUser);
-            model.addAttribute("otherUsers", otherUsers);
-
-            MessageContactVO contactVO = userService.getContacts(loginUser);
-            model.addAttribute("contactVO", contactVO);
-            return "index";
-
-        } catch (UserNotExistException e1) {
-            model.addAttribute("errormsg", email + ": 该用户不存在！");
-            return "login";
-        } catch (InvalidUserInfoException e2) {
-            model.addAttribute("errormsg", "密码输入错误！");
-            return "login";
-        }
-    }
-
     @RequestMapping(path = "/api/login",method = RequestMethod.POST)
     @ResponseBody
     public ResultBody loginJson(@RequestParam String email, @RequestParam String password) {
         LoginResVo loginResVo=new LoginResVo();
-        User loginUser = userService.login(email, password);
+        ImUser loginUser = userService.login(email, password);
         loginResVo.setLoginUser(loginUser);
-        List<User> otherUsers = userService.getAllUsersExcept(loginUser);
+        List<ImUser> otherUsers = userService.getAllUsersExcept(loginUser);
         loginResVo.setOtherUsers(otherUsers);
         MessageContactVO contactVO = userService.getContacts(loginUser);
         loginResVo.setContactVO(contactVO);
         return ResultUtil.success(loginResVo);
     }
 
-    @RequestMapping(path = "/ws")
-    public String ws(Model model, HttpSession session) {
-        User loginUser = (User) session.getAttribute(Constants.SESSION_KEY);
-        model.addAttribute("loginUser", loginUser);
-        List<User> otherUsers = userService.getAllUsersExcept(loginUser);
-        model.addAttribute("otherUsers", otherUsers);
-
-        MessageContactVO contactVO = userService.getContacts(loginUser);
-        model.addAttribute("contactVO", contactVO);
-        return "index_ws";
-    }
-
-    @GetMapping("/logout")
-    public String logout(HttpSession session) {
-        // 移除session
-        session.removeAttribute(Constants.SESSION_KEY);
-        return "redirect:/";
-    }
 
 }

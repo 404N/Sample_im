@@ -2,7 +2,6 @@ package geektime.im.lecture.controller;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import geektime.im.lecture.entity.MessageContent;
 import geektime.im.lecture.response.ResultBody;
 import geektime.im.lecture.response.ResultUtil;
 import geektime.im.lecture.service.MessageService;
@@ -24,7 +23,7 @@ public class MessageController {
 
 
     @PostMapping(path = "/sendMsg")
-    public ResultBody sendMsg(@RequestParam Long senderUid, @RequestParam Long recipientUid, String content, Integer msgType, Model model, HttpSession session) {
+    public ResultBody sendMsg(@RequestParam Integer senderUid, @RequestParam Integer recipientUid, String content, Integer msgType) {
         MessageVO messageContent = messageService.sendNewMsg(senderUid, recipientUid, content, msgType);
         if (null != messageContent) {
             return ResultUtil.success(JSONObject.toJSONString(messageContent));
@@ -34,7 +33,7 @@ public class MessageController {
     }
 
     @GetMapping(path = "/queryMsg")
-    public ResultBody queryMsg(@RequestParam Long ownerUid, @RequestParam Long otherUid, Model model, HttpSession session) {
+    public ResultBody queryMsg(@RequestParam Integer ownerUid, @RequestParam Integer otherUid, Model model, HttpSession session) {
         List<MessageVO> messageVO = messageService.queryConversationMsg(ownerUid, otherUid);
         if (messageVO != null) {
             return ResultUtil.success(JSONArray.toJSONString(messageVO));
@@ -44,7 +43,7 @@ public class MessageController {
     }
 
     @GetMapping(path = "/queryMsgSinceMid")
-    public ResultBody queryMsgSinceMid(@RequestParam Long ownerUid, @RequestParam Long otherUid, @RequestParam Long lastMid, Model model, HttpSession session) {
+    public ResultBody queryMsgSinceMid(@RequestParam Integer ownerUid, @RequestParam Integer otherUid, @RequestParam Integer lastMid) {
         List<MessageVO> messageVO = messageService.queryNewerMsgFrom(ownerUid, otherUid, lastMid);
         if (messageVO != null) {
             return ResultUtil.success(JSONArray.toJSONString(messageVO));
@@ -54,7 +53,7 @@ public class MessageController {
     }
 
     @GetMapping(path = "/queryContacts")
-    public ResultBody queryContacts(@RequestParam Long ownerUid, Model model, HttpSession session) {
+    public ResultBody queryContacts(@RequestParam Integer ownerUid) {
         MessageContactVO contactVO = messageService.queryContacts(ownerUid);
         if (contactVO != null) {
             return ResultUtil.success(JSONObject.toJSONString(contactVO));

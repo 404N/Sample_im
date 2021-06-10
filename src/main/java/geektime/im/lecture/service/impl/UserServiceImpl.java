@@ -1,14 +1,13 @@
 package geektime.im.lecture.service.impl;
 
-import geektime.im.lecture.dao.MessageContactRepository;
-import geektime.im.lecture.dao.MessageContentRepository;
-import geektime.im.lecture.dao.UserRepository;
-import geektime.im.lecture.entity.MessageContact;
-import geektime.im.lecture.entity.MessageContent;
-import geektime.im.lecture.entity.User;
+import geektime.im.lecture.dao.ImMsgContactMapper;
+import geektime.im.lecture.dao.ImMsgContentMapper;
+import geektime.im.lecture.dao.ImMsgRelationMapper;
+import geektime.im.lecture.dao.ImUserMapper;
+import geektime.im.lecture.entity.ImMsgContact;
+import geektime.im.lecture.entity.ImMsgContent;
+import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.exceptions.BaseException;
-import geektime.im.lecture.exceptions.InvalidUserInfoException;
-import geektime.im.lecture.exceptions.UserNotExistException;
 import geektime.im.lecture.response.CommonEnum;
 import geektime.im.lecture.service.UserService;
 import geektime.im.lecture.vo.MessageContactVO;
@@ -17,33 +16,35 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Component
+@Service
 public class UserServiceImpl implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     @Autowired
-    private UserRepository userRepository;
+    private ImUserMapper userRepository;
+
     @Autowired
-    private MessageContactRepository contactRepository;
+    private ImMsgContactMapper contactRepository;
 
     @Autowired
     private RedisTemplate redisTemplate;
 
     @Autowired
-    private MessageContentRepository contentRepository;
+    private ImMsgContentMapper contentRepository;
 
     @Override
-    public User login(String email, String password) {
-        List<User> users = userRepository.findByEmail(email);
+    public ImUser login(String email, String password) {
+        List<ImUser> users = userRepository.findByEmail(email);
         if (null == users || users.isEmpty()) {
             log.warn("该用户不存在:" + email);
             throw new BaseException(CommonEnum.ACCOUNT_WRONG);
         }
-        User user = users.get(0);
+        ImUser user = users.get(0);
         if (user.getPassword().equals(password)) {
             log.info(user.getUsername() + " logged in!");
         } else {
@@ -55,39 +56,43 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<User> getAllUsersExcept(long exceptUid) {
-        List<User> otherUsers = userRepository.findAll();
-        otherUsers.remove(userRepository.findById(exceptUid).orElse(null));
+    public List<ImUser> getAllUsersExcept(Integer exceptUid) {
+        List<ImUser> otherUsers = userRepository.findUsersByUidIsNot(exceptUid);
         return otherUsers;
     }
 
     @Override
-    public List<User> getAllUsersExcept(User exceptUser) {
-        List<User> otherUsers = userRepository.findUsersByUidIsNot(exceptUser.getUid());
+    public List<ImUser> getAllUsersExcept(ImUser exceptUser) {
+        List<ImUser> otherUsers = userRepository.findUsersByUidIsNot(exceptUser.getUid());
         return otherUsers;
     }
 
     @Override
-    public MessageContactVO getContacts(User ownerUser) {
-        List<MessageContact> contacts = contactRepository.findMessageContactsByOwnerUidOrderByMidDesc(ownerUser.getUid());
+    public MessageContactVO getContacts(ImUser ownerUser) {
+        List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUser.getUid());
+        System.out.println(contacts.size());
+        for (int i=0;i<contacts.size();i++){
+            System.out.println(contacts.get(i).toString());
+        }
         if (contacts != null) {
-            long totalUnread = 0;
+            Integer totalUnread = 0;
             Object totalUnreadObj = redisTemplate.opsForValue().get(ownerUser.getUid() + "_T");
             if (null != totalUnreadObj) {
-                totalUnread = Long.parseLong((String) totalUnreadObj);
+                totalUnread = Integer.parseInt((String) totalUnreadObj);
             }
 
-            final MessageContactVO contactVO = new MessageContactVO(ownerUser.getUid(), ownerUser.getUsername(), ownerUser.getAvatar(), totalUnread);
-            contacts.stream().forEach(contact -> {
-                Long mid = contact.getMid();
-                MessageContent contentVO = contentRepository.findById(mid).orElse(null);
-                User otherUser = userRepository.findById(contact.getOtherUid()).orElse(null);
-
+            MessageContactVO contactVO = new MessageContactVO(ownerUser.getUid(), ownerUser.getUsername(), ownerUser.getAvatar(), totalUnread);
+            contacts.forEach(contact -> {
+                System.out.println(1231);
+                System.out.println(contact.getOtherUid());
+                Integer mid = contact.getMid();
+                ImMsgContent contentVO = contentRepository.findByMid(mid);
+                ImUser otherUser = userRepository.findByUid(contact.getOtherUid());
                 if (null != contentVO) {
-                    long convUnread = 0;
+                    Integer convUnread = 0;
                     Object convUnreadObj = redisTemplate.opsForHash().get(ownerUser.getUid() + "_C", otherUser.getUid());
                     if (null != convUnreadObj) {
-                        convUnread = Long.parseLong((String) convUnreadObj);
+                        convUnread = Integer.parseInt((String) convUnreadObj);
                     }
                     MessageContactVO.ContactInfo contactInfo = contactVO.new ContactInfo(otherUser.getUid(), otherUser.getUsername(), otherUser.getAvatar(), mid, contact.getType(), contentVO.getContent(), convUnread, contact.getCreateTime());
                     contactVO.appendContact(contactInfo);

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="geektime.im.lecture.dao.ImGroupInfoMapper" >
+  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImGroupInfo" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="group_name" property="groupName" jdbcType="VARCHAR" />
+    <result column="group_user_id" property="groupUserId" jdbcType="INTEGER" />
+    <result column="group_news_id" property="groupNewsId" jdbcType="INTEGER" />
+    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <select id="queryGroupByName" resultType="geektime.im.lecture.vo.GroupVo">
+    select group_id,group_name
+    from im_group_info
+    where group_name like '%'#{groupName,jdbcType=VARCHAR}'%'
+  </select>
+</mapper>

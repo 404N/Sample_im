@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="geektime.im.lecture.dao.ImGroupMsgMapper" >
+  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImGroupMsg" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="mid" property="mid" jdbcType="INTEGER" />
+    <result column="group_id" property="groupId" jdbcType="INTEGER" />
+    <result column="send_id" property="sendId" jdbcType="INTEGER" />
+    <result column="content" property="content" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+</mapper>

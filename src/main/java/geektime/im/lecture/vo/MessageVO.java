@@ -3,11 +3,11 @@ package geektime.im.lecture.vo;
 import java.util.Date;
 
 public class MessageVO {
-    private Long mid;
+    private Integer mid;
     private String content;
-    private Long ownerUid;
+    private Integer ownerUid;
     private Integer type;
-    private Long otherUid;
+    private Integer otherUid;
     private Date createTime;
     private String ownerUidAvatar;
     private String otherUidAvatar;
@@ -22,7 +22,7 @@ public class MessageVO {
         return otherName;
     }
 
-    public MessageVO(Long mid, String content, Long ownerUid, Integer type, Long otherUid, Date createTime, String ownerUidAvatar, String otherUidAvatar, String ownerName, String otherName) {
+    public MessageVO(Integer mid, String content, Integer ownerUid, Integer type, Integer otherUid, Date createTime, String ownerUidAvatar, String otherUidAvatar, String ownerName, String otherName) {
         this.mid = mid;
         this.content = content;
         this.ownerUid = ownerUid;
@@ -35,7 +35,7 @@ public class MessageVO {
         this.otherName = otherName;
     }
 
-    public Long getMid() {
+    public Integer getMid() {
         return mid;
     }
 
@@ -43,7 +43,7 @@ public class MessageVO {
         return content;
     }
 
-    public Long getOwnerUid() {
+    public Integer getOwnerUid() {
         return ownerUid;
     }
 
@@ -51,7 +51,7 @@ public class MessageVO {
         return type;
     }
 
-    public Long getOtherUid() {
+    public Integer getOtherUid() {
         return otherUid;
     }
 
