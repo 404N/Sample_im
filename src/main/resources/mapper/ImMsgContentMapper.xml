@@ -1,23 +1,23 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="geektime.im.lecture.dao.ImMsgContentMapper" >
-  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImMsgContent" >
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="geektime.im.lecture.dao.ImMsgContentMapper">
+  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImMsgContent">
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="mid" property="mid" jdbcType="INTEGER" />
-    <result column="content" property="content" jdbcType="VARCHAR" />
-    <result column="sender_id" property="senderId" jdbcType="INTEGER" />
-    <result column="recipient_id" property="recipientId" jdbcType="INTEGER" />
-    <result column="msg_type" property="msgType" jdbcType="INTEGER" />
-    <result column="create_time" property="createTime" jdbcType="TIMESTAMP" />
+    <id column="mid" jdbcType="INTEGER" property="mid" />
+    <result column="content" jdbcType="VARCHAR" property="content" />
+    <result column="sender_id" jdbcType="INTEGER" property="senderId" />
+    <result column="recipient_id" jdbcType="INTEGER" property="recipientId" />
+    <result column="msg_type" jdbcType="INTEGER" property="msgType" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <select id="findByMid" resultType="geektime.im.lecture.entity.ImMsgContent">
     select *
     from im_msg_content
     where mid=#{mid,jdbcType=INTEGER}
   </select>
-  <insert id="insertGetMid" useGeneratedKeys="true" keyProperty="id">
+  <insert id="insertGetMid" keyProperty="id" useGeneratedKeys="true">
     INSERT INTO
       im_msg_content(content,sender_id,recipient_id,msg_type,create_time)
     VALUES(#{content},#{senderId},#{recipientId},#{msgType},#{createTime});

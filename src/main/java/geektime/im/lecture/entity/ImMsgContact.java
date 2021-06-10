@@ -5,6 +5,7 @@ import javax.persistence.*;
 
 @Table(name = "im_msg_contact")
 public class ImMsgContact {
+
     @Column(name = "owner_uid")
     private Integer ownerUid;
 

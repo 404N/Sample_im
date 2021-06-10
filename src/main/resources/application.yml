@@ -30,6 +30,7 @@ mybatis:
   type-aliases-package: geektime.im.lecture.entity
   configuration:
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+    map-underscore-to-camel-case: true
 
 websocket:
   connector:

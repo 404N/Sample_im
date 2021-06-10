@@ -70,17 +70,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public MessageContactVO getContacts(ImUser ownerUser) {
         List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUser.getUid());
-        System.out.println(contacts.size());
-        for (int i=0;i<contacts.size();i++){
-            System.out.println(contacts.get(i).toString());
-        }
         if (contacts != null) {
             Integer totalUnread = 0;
             Object totalUnreadObj = redisTemplate.opsForValue().get(ownerUser.getUid() + "_T");
             if (null != totalUnreadObj) {
                 totalUnread = Integer.parseInt((String) totalUnreadObj);
             }
-
             MessageContactVO contactVO = new MessageContactVO(ownerUser.getUid(), ownerUser.getUsername(), ownerUser.getAvatar(), totalUnread);
             contacts.forEach(contact -> {
                 System.out.println(1231);
