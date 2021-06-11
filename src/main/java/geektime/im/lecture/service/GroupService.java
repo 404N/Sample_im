@@ -1,6 +1,8 @@
 package geektime.im.lecture.service;
 
+import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.GroupVo;
+import geektime.im.lecture.vo.MessageVO;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,4 +21,12 @@ public interface GroupService {
      * @param groupName
      */
     List<GroupVo> queryGroup(String groupName);
+
+    /**
+     * 查找群聊消息根据页数
+     * @param groupId
+     * @param page
+     * @return
+     */
+    List<GroupMsgVo> queryMsgById(Integer groupId);
 }

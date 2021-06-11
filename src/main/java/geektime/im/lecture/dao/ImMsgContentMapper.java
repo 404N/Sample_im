@@ -3,6 +3,7 @@ package geektime.im.lecture.dao;
 import geektime.im.lecture.core.CustomerMapper;
 import geektime.im.lecture.entity.ImMsgContent;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 @Mapper
@@ -18,5 +19,5 @@ public interface ImMsgContentMapper extends CustomerMapper<ImMsgContent> {
      *
      * @return
      */
-    Integer insertGetMid(ImMsgContent content);
+    Integer insertGetMid(@Param("content")ImMsgContent content);
 }

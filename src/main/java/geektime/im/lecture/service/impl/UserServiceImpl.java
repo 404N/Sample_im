@@ -11,6 +11,7 @@ import geektime.im.lecture.exceptions.BaseException;
 import geektime.im.lecture.response.CommonEnum;
 import geektime.im.lecture.service.UserService;
 import geektime.im.lecture.vo.MessageContactVO;
+import geektime.im.lecture.vo.UserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,20 +39,24 @@ public class UserServiceImpl implements UserService {
     private ImMsgContentMapper contentRepository;
 
     @Override
-    public ImUser login(String email, String password) {
-        List<ImUser> users = userRepository.findByEmail(email);
-        if (null == users || users.isEmpty()) {
+    public UserVo login(String email, String password) {
+        ImUser user = userRepository.findByEmail(email);
+        if (null == user) {
             log.warn("该用户不存在:" + email);
             throw new BaseException(CommonEnum.ACCOUNT_WRONG);
         }
-        ImUser user = users.get(0);
         if (user.getPassword().equals(password)) {
             log.info(user.getUsername() + " logged in!");
         } else {
             log.warn(user.getUsername() + " failed to log in!");
             throw new BaseException(CommonEnum.ACCOUNT_WRONG);
         }
-        return user;
+        UserVo userVo=new UserVo();
+        userVo.setUid(user.getUid());
+        userVo.setUsername(user.getUsername());
+        userVo.setAvatar(user.getAvatar());
+        userVo.setEmail(user.getEmail());
+        return userVo;
     }
 
 
@@ -96,5 +101,15 @@ public class UserServiceImpl implements UserService {
             return contactVO;
         }
         return null;
+    }
+
+    @Override
+    public ImUser getUserByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public ImUser getUserByUid(Integer uid) {
+        return userRepository.findByUid(uid);
     }
 }

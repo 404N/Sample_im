@@ -2,8 +2,11 @@ package geektime.im.lecture.ws.handler;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import geektime.im.lecture.service.MessageService;
 import geektime.im.lecture.utils.EnhancedThreadFactory;
+import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageVO;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
@@ -56,14 +59,20 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     ctx.writeAndFlush(new TextWebSocketFrame("{\"type\":0,\"timeout\":" + timeout + "}"));
                     break;
                 case 1:
-                    //上线消息
+                    //上线消息，返回相应数据
                     long loginUid = data.getLong("uid");
                     userChannel.put(loginUid, ctx.channel());
                     channelUser.put(ctx.channel(), loginUid);
                     ctx.channel().attr(TID_GENERATOR).set(new AtomicLong(0));
                     ctx.channel().attr(NON_ACKED_MAP).set(new ConcurrentHashMap<Long, JSONObject>());
+                    LoginResVo loginResVo=messageService.queryLoginData((int) loginUid);
                     logger.info("[user bind]: uid = {} , channel = {}", loginUid, ctx.channel());
-                    ctx.writeAndFlush(new TextWebSocketFrame("{\"type\":1,\"status\":\"success\"}"));
+                    JSONObject loginJson = new JSONObject();
+                    loginJson.put("type", 1);
+                    loginJson.put("status", "success");
+                    loginJson.put("data", JSONArray.toJSON(loginResVo));
+                    String str = loginJson.toJSONString();
+                    ctx.writeAndFlush(new TextWebSocketFrame(str));
                     break;
                 case 2:
                     //查询消息
@@ -108,6 +117,27 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     ConcurrentHashMap<Long, JSONObject> nonAckedMap = ctx.channel().attr(NON_ACKED_MAP).get();
                     nonAckedMap.remove(tid);
                     break;
+
+                case 100:
+                    //群聊消息查询
+                    //获取群id和消息id
+                    Integer groupId = data.getInteger("groupId");
+                    //type 0表示获取最新的50条，1表示获取自mid开始之后的消息
+                    Integer getType = data.getInteger("type");
+                    if(type==0){
+                        //群消息记录页数
+                        Integer page = data.getInteger("page");
+                        //分页起始码以及每页页数
+                        PageHelper.startPage(page,50);
+                        List<MessageVO> messageVOList=messageService.queryGroupMsg(groupId);
+                        PageInfo pageInfo=new PageInfo(messageVOList);
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("type", 100);
+                        jsonObject.put("data", JSONObject.toJSON(pageInfo));
+                        ctx.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(jsonObject)));
+                    }else{
+                        Integer mid = data.getInteger("mid");
+                    }
 
                 default:
                     break;

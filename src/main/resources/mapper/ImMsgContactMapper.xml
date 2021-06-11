@@ -11,6 +11,12 @@
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
+  <update id="updateContact">
+    update im_msg_contact
+    set mid=#{imMsgContact.mid,jdbcType=INTEGER}
+    where owner_uid=#{imMsgContact.ownerUid,jdbcType=INTEGER} and
+          other_uid=#{imMsgContact.otherUid,jdbcType=INTEGER}
+  </update>
   <select id="findMessageContactsByOwnerUid" resultType="geektime.im.lecture.entity.ImMsgContact">
     select *
     from im_msg_contact

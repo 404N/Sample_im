@@ -8,12 +8,17 @@ import geektime.im.lecture.dao.ImMsgContentMapper;
 import geektime.im.lecture.dao.ImMsgRelationMapper;
 import geektime.im.lecture.dao.ImUserMapper;
 import geektime.im.lecture.entity.*;
+import geektime.im.lecture.response.ResultUtil;
+import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.service.MessageService;
+import geektime.im.lecture.service.UserService;
+import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.MessageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -31,8 +36,13 @@ public class MessageServiceImpl implements MessageService {
     private ImUserMapper userRepository;
     @Autowired
     private RedisTemplate redisTemplate;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private GroupService groupService;
 
     @Override
+    @Transactional
     public MessageVO sendNewMsg(Integer senderUid, Integer recipientUid, String content, Integer msgType) {
         Date currentTime = new Date();
         /**存内容*/
@@ -42,9 +52,8 @@ public class MessageServiceImpl implements MessageService {
         messageContent.setContent(content);
         messageContent.setMsgType(msgType);
         messageContent.setCreateTime(currentTime);
-        Integer mid=contentRepository.insertGetMid(messageContent);
-        messageContent.setMid(mid);
-
+        contentRepository.insertGetMid(messageContent);
+        Integer mid=messageContent.getMid();
         /**存发件人的发件箱*/
         ImMsgRelation messageRelationSender = new ImMsgRelation();
         messageRelationSender.setMid(mid);
@@ -67,6 +76,7 @@ public class MessageServiceImpl implements MessageService {
         ImMsgContact messageContactSender = contactRepository.findMsgByOwnerIdAndOtherId(senderUid, recipientUid);
         if (messageContactSender != null) {
             messageContactSender.setMid(mid);
+            contactRepository.updateContact(messageContactSender);
         } else {
             messageContactSender = new ImMsgContact();
             messageContactSender.setOwnerUid(senderUid);
@@ -74,13 +84,15 @@ public class MessageServiceImpl implements MessageService {
             messageContactSender.setMid(mid);
             messageContactSender.setCreateTime(currentTime);
             messageContactSender.setType(0);
+            contactRepository.insert(messageContactSender);
         }
-        contactRepository.insert(messageContactSender);
+
 
         /**更新收件人的最近联系人 */
         ImMsgContact messageContactRecipient = contactRepository.findMsgByOwnerIdAndOtherId(recipientUid, senderUid);
         if (messageContactRecipient != null) {
             messageContactRecipient.setMid(mid);
+            contactRepository.updateContact(messageContactRecipient);
         } else {
             messageContactRecipient = new ImMsgContact();
             messageContactRecipient.setOwnerUid(recipientUid);
@@ -88,8 +100,9 @@ public class MessageServiceImpl implements MessageService {
             messageContactRecipient.setMid(mid);
             messageContactRecipient.setCreateTime(currentTime);
             messageContactRecipient.setType(1);
+            contactRepository.insert(messageContactRecipient);
         }
-        contactRepository.insert(messageContactRecipient);
+
 
         /**更未读更新 */
         //加总未读
@@ -102,7 +115,6 @@ public class MessageServiceImpl implements MessageService {
         ImUser other = userRepository.findByUid(recipientUid);
         MessageVO messageVO = new MessageVO(mid, content, self.getUid(), messageContactSender.getType(), other.getUid(), messageContent.getCreateTime(), self.getAvatar(), other.getAvatar(), self.getUsername(), other.getUsername());
         redisTemplate.convertAndSend(Constants.WEBSOCKET_MSG_TOPIC, JSONObject.toJSONString(messageVO));
-
         return messageVO;
     }
 
@@ -190,5 +202,22 @@ public class MessageServiceImpl implements MessageService {
             totalUnread = Integer.parseInt((String) totalUnreadObj);
         }
         return totalUnread;
+    }
+
+    @Override
+    public LoginResVo queryLoginData(Integer uid) {
+        LoginResVo loginResVo=new LoginResVo();
+        ImUser loginUser = userService.getUserByUid(uid);
+        loginResVo.setLoginUser(loginUser);
+        List<ImUser> otherUsers = userService.getAllUsersExcept(loginUser);
+        loginResVo.setOtherUsers(otherUsers);
+        MessageContactVO contactVO = userService.getContacts(loginUser);
+        loginResVo.setContactVO(contactVO);
+        return loginResVo;
+    }
+
+    @Override
+    public List<MessageVO> queryGroupMsg(Integer groupId) {
+        return groupService.queryMsgById(groupId);
     }
 }

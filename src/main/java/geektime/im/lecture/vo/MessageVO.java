@@ -66,4 +66,6 @@ public class MessageVO {
     public String getOtherUidAvatar() {
         return otherUidAvatar;
     }
+
+
 }

@@ -2,7 +2,9 @@ package geektime.im.lecture.dao;
 
 import geektime.im.lecture.core.CustomerMapper;
 import geektime.im.lecture.entity.ImGroupInfo;
+import geektime.im.lecture.entity.ImGroupMsg;
 import geektime.im.lecture.vo.GroupVo;
+import geektime.im.lecture.vo.MessageVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +19,11 @@ public interface ImGroupInfoMapper extends CustomerMapper<ImGroupInfo> {
      * @return
      */
     List<GroupVo> queryGroupByName(String groupName);
+
+    /**
+     * 根据群id查找所有消息
+     * @param groupId
+     * @return
+     */
+    List<ImGroupMsg> queryMsgByGroupId(Integer groupId);
 }

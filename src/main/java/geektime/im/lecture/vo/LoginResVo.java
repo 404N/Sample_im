@@ -33,4 +33,13 @@ public class LoginResVo {
     public void setContactVO(MessageContactVO contactVO) {
         this.contactVO = contactVO;
     }
+
+    @Override
+    public String toString() {
+        return "LoginResVo{" +
+                "loginUser=" + loginUser +
+                ", otherUsers=" + otherUsers +
+                ", contactVO=" + contactVO +
+                '}';
+    }
 }

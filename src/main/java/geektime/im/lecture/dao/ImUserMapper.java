@@ -15,7 +15,7 @@ public interface ImUserMapper extends CustomerMapper<ImUser> {
      * @param email
      * @return
      */
-    List<ImUser> findByEmail(String email);
+    ImUser findByEmail(String email);
 
     /**
      * 查找除当前用户之外的所有用户

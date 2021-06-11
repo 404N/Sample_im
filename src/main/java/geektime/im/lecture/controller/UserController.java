@@ -6,6 +6,7 @@ import geektime.im.lecture.response.ResultUtil;
 import geektime.im.lecture.service.UserService;
 import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageContactVO;
+import geektime.im.lecture.vo.UserVo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,14 +30,8 @@ public class UserController {
     @RequestMapping(path = "/api/login",method = RequestMethod.POST)
     @ResponseBody
     public ResultBody loginJson(@RequestParam String email, @RequestParam String password) {
-        LoginResVo loginResVo=new LoginResVo();
-        ImUser loginUser = userService.login(email, password);
-        loginResVo.setLoginUser(loginUser);
-        List<ImUser> otherUsers = userService.getAllUsersExcept(loginUser);
-        loginResVo.setOtherUsers(otherUsers);
-        MessageContactVO contactVO = userService.getContacts(loginUser);
-        loginResVo.setContactVO(contactVO);
-        return ResultUtil.success(loginResVo);
+        UserVo loginUser = userService.login(email, password);
+        return ResultUtil.success(loginUser);
     }
 
 
