@@ -6,7 +6,6 @@ public class GroupMsgVo {
     private Integer mid;
     private String content;
     private Integer ownerUid;
-    private Integer type;
     private Integer groupId;
     private Date createTime;
     private String avatar;
@@ -34,14 +33,6 @@ public class GroupMsgVo {
 
     public void setOwnerUid(Integer ownerUid) {
         this.ownerUid = ownerUid;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public Integer getGroupId() {

@@ -5,12 +5,12 @@
         <!--
           WARNING - @mbg.generated
         -->
-        <id column="mid" jdbcType="INTEGER" property="mid"/>
-        <result column="content" jdbcType="VARCHAR" property="content"/>
-        <result column="sender_id" jdbcType="INTEGER" property="senderId"/>
-        <result column="recipient_id" jdbcType="INTEGER" property="recipientId"/>
-        <result column="msg_type" jdbcType="INTEGER" property="msgType"/>
-        <result column="create_time" jdbcType="TIMESTAMP" property="createTime"/>
+        <id column="mid" jdbcType="INTEGER" property="mid" />
+        <result column="content" jdbcType="VARCHAR" property="content" />
+        <result column="sender_id" jdbcType="INTEGER" property="senderId" />
+        <result column="recipient_id" jdbcType="INTEGER" property="recipientId" />
+        <result column="msg_type" jdbcType="INTEGER" property="msgType" />
+        <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     </resultMap>
     <select id="findByMid" resultType="geektime.im.lecture.entity.ImMsgContent">
         select *

@@ -14,6 +14,12 @@ public class ImGroupMsg {
     @Column(name = "send_id")
     private Integer sendId;
 
+    @Column(name = "send_name")
+    private String sendName;
+
+    @Column(name = "send_avatar")
+    private String sendAvatar;
+
     private String content;
 
     @Column(name = "send_time")
@@ -59,6 +65,34 @@ public class ImGroupMsg {
      */
     public void setSendId(Integer sendId) {
         this.sendId = sendId;
+    }
+
+    /**
+     * @return send_name
+     */
+    public String getSendName() {
+        return sendName;
+    }
+
+    /**
+     * @param sendName
+     */
+    public void setSendName(String sendName) {
+        this.sendName = sendName;
+    }
+
+    /**
+     * @return send_avatar
+     */
+    public String getSendAvatar() {
+        return sendAvatar;
+    }
+
+    /**
+     * @param sendAvatar
+     */
+    public void setSendAvatar(String sendAvatar) {
+        this.sendAvatar = sendAvatar;
     }
 
     /**

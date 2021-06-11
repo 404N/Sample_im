@@ -41,7 +41,13 @@ public class GroupServiceImpl implements GroupService {
         msgList.forEach(msg->{
             GroupMsgVo vo=new GroupMsgVo();
             vo.setGroupId(groupId);
-
+            vo.setAvatar(msg.getSendAvatar());
+            vo.setCreateTime(msg.getSendTime());
+            vo.setContent(msg.getContent());
+            vo.setMid(msg.getMid());
+            vo.setOwnerName(msg.getSendName());
+            vo.setOwnerUid(msg.getSendId());
+            groupMsgVos.add(vo);
         });
         return groupMsgVos;
     }

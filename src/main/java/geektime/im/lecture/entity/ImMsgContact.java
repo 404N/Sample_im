@@ -5,7 +5,6 @@ import javax.persistence.*;
 
 @Table(name = "im_msg_contact")
 public class ImMsgContact {
-
     @Column(name = "owner_uid")
     private Integer ownerUid;
 
@@ -87,16 +86,5 @@ public class ImMsgContact {
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "ImMsgContact{" +
-                "ownerUid=" + ownerUid +
-                ", otherUid=" + otherUid +
-                ", mid=" + mid +
-                ", type=" + type +
-                ", createTime=" + createTime +
-                '}';
     }
 }

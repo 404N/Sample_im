@@ -8,6 +8,8 @@
     <id column="mid" jdbcType="INTEGER" property="mid" />
     <result column="group_id" jdbcType="INTEGER" property="groupId" />
     <result column="send_id" jdbcType="INTEGER" property="sendId" />
+    <result column="send_name" jdbcType="VARCHAR" property="sendName" />
+    <result column="send_avatar" jdbcType="VARCHAR" property="sendAvatar" />
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
   </resultMap>
