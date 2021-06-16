@@ -20,10 +20,4 @@ public interface ImGroupInfoMapper extends CustomerMapper<ImGroupInfo> {
      */
     List<GroupVo> queryGroupByName(String groupName);
 
-    /**
-     * 根据群id查找所有消息
-     * @param groupId
-     * @return
-     */
-    List<ImGroupMsg> queryMsgByGroupId(Integer groupId);
 }

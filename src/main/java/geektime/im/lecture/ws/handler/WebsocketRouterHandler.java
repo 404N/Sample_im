@@ -4,8 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.service.MessageService;
 import geektime.im.lecture.utils.EnhancedThreadFactory;
+import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageVO;
 import io.netty.channel.Channel;
@@ -65,7 +67,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     channelUser.put(ctx.channel(), loginUid);
                     ctx.channel().attr(TID_GENERATOR).set(new AtomicLong(0));
                     ctx.channel().attr(NON_ACKED_MAP).set(new ConcurrentHashMap<Long, JSONObject>());
-                    LoginResVo loginResVo=messageService.queryLoginData((int) loginUid);
+                    LoginResVo loginResVo = messageService.queryLoginData((int) loginUid);
                     logger.info("[user bind]: uid = {} , channel = {}", loginUid, ctx.channel());
                     JSONObject loginJson = new JSONObject();
                     loginJson.put("type", 1);
@@ -124,21 +126,43 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     Integer groupId = data.getInteger("groupId");
                     //type 0表示获取最新的50条，1表示获取自mid开始之后的消息
                     Integer getType = data.getInteger("type");
-                    if(type==0){
+                    if (type == 0) {
                         //群消息记录页数
                         Integer page = data.getInteger("page");
                         //分页起始码以及每页页数
-                        PageHelper.startPage(page,50);
-                        List<MessageVO> messageVOList=messageService.queryGroupMsg(groupId);
-                        PageInfo pageInfo=new PageInfo(messageVOList);
+                        PageHelper.startPage(page, 50);
+                        List<GroupMsgVo> messageVOList = messageService.queryGroupMsg(groupId);
+                        PageInfo pageInfo = new PageInfo(messageVOList);
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("type", 100);
                         jsonObject.put("data", JSONObject.toJSON(pageInfo));
+                        jsonObject.put("page", page);
                         ctx.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(jsonObject)));
-                    }else{
+                    } else {
+                        //无页码查询
                         Integer mid = data.getInteger("mid");
+                        List<GroupMsgVo> messageVOList = messageService.queryGroupMsgByMid(groupId, mid);
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("type", 100);
+                        jsonObject.put("data", JSONObject.toJSON(messageVOList));
+                        jsonObject.put("page", 0);
+                        ctx.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(jsonObject)));
                     }
 
+                case 101:
+                    //群聊消息发送
+                    //获取群id
+                    Integer gId = data.getInteger("groupId");
+                    Integer sId = data.getInteger("senderUid");
+                    String groupContent = data.getString("content");
+                    GroupMsgVo groupMsgVo = messageService.sendGroupMessage(sId, gId, groupContent);
+                    if (groupMsgVo != null) {
+                        JSONObject jsonObject = new JSONObject();
+                        jsonObject.put("type", 101);
+                        jsonObject.put("data", JSONObject.toJSON(groupMsgVo));
+                        ctx.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(jsonObject)));
+                    }
+                    break;
                 default:
                     break;
             }
@@ -179,6 +203,30 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                 }
             });
         }
+    }
+
+    public void pushGroupMsg(Integer groupId, Integer sendUid, JSONObject message) {
+        List<ImUser> imUserList = messageService.queryUsersByGroupId(groupId);
+        imUserList.forEach(user -> {
+            if (!user.getUid().equals(sendUid)) {
+                Channel channel = userChannel.get(user.getUid().longValue());
+                if (channel != null && channel.isActive() && channel.isWritable()) {
+                    AtomicLong generator = channel.attr(TID_GENERATOR).get();
+                    long tid = generator.incrementAndGet();
+                    message.put("tid", tid);
+                    channel.writeAndFlush(new TextWebSocketFrame(message.toJSONString())).addListener(future -> {
+                        if (future.isCancelled()) {
+                            logger.warn("future has been cancelled. {}, channel: {}, groupId: {}", message, channel, groupId);
+                        } else if (future.isSuccess()) {
+                            addMsgToAckBuffer(channel, message);
+                            logger.warn("future has been successfully pushed. {}, channel: {}, groupId: {}", message, channel, groupId);
+                        } else {
+                            logger.error("group message write fail, {}, channel: {}", message, channel, future.cause());
+                        }
+                    });
+                }
+            }
+        });
     }
 
     /**

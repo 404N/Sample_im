@@ -1,5 +1,6 @@
 package geektime.im.lecture.service;
 
+import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.GroupVo;
 import geektime.im.lecture.vo.MessageVO;
@@ -25,8 +26,22 @@ public interface GroupService {
     /**
      * 查找群聊消息根据页数
      * @param groupId
-     * @param page
      * @return
      */
     List<GroupMsgVo> queryMsgById(Integer groupId);
+
+    /**
+     * 查找大于mid的所有消息
+     * @param groupId
+     * @param mid
+     * @return
+     */
+    List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid);
+
+    /**
+     * 查找群聊的所有用户
+     * @param groupId
+     * @return
+     */
+    List<ImUser> queryUsersByGroupId(Integer groupId);
 }

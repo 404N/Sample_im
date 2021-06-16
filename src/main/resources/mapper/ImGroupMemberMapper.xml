@@ -10,4 +10,9 @@
     <result column="user_id" jdbcType="INTEGER" property="userId" />
     <result column="join_time" jdbcType="TIMESTAMP" property="joinTime" />
   </resultMap>
+  <select id="queryUsersByGroupId" resultType="geektime.im.lecture.entity.ImUser">
+    select *
+    from im_group_member
+    where group_id=#{groupId,jdbcType=INTEGER}
+  </select>
 </mapper>

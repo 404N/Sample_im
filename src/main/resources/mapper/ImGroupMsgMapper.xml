@@ -13,4 +13,14 @@
     <result column="content" jdbcType="VARCHAR" property="content" />
     <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
   </resultMap>
+  <select id="queryMsgByGroupId" resultType="geektime.im.lecture.entity.ImGroupMsg">
+    select *
+    from im_group_msg
+    where group_id=#{groupId,jdbcType=INTEGER}
+  </select>
+  <select id="queryGroupMsgByMid" resultType="geektime.im.lecture.entity.ImGroupMsg">
+    select *
+    from im_group_msg
+    where group_id=#{groupId,jdbcType=INTEGER} and <![CDATA[ mid>#{lastMid,jdbcType=INTEGER} ]]>
+  </select>
 </mapper>

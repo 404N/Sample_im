@@ -1,8 +1,11 @@
 package geektime.im.lecture.service.impl;
 
 import geektime.im.lecture.dao.ImGroupInfoMapper;
+import geektime.im.lecture.dao.ImGroupMemberMapper;
+import geektime.im.lecture.dao.ImGroupMsgMapper;
 import geektime.im.lecture.entity.ImGroupInfo;
 import geektime.im.lecture.entity.ImGroupMsg;
+import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.GroupVo;
@@ -20,6 +23,12 @@ public class GroupServiceImpl implements GroupService {
     @Autowired
     private ImGroupInfoMapper groupInfoRepository;
 
+    @Autowired
+    private ImGroupMsgMapper groupMsgMapper;
+
+    @Autowired
+    private ImGroupMemberMapper groupMemberMapper;
+
     @Override
     public void createGroup(Integer userId, String groupName) {
         ImGroupInfo groupInfo=new ImGroupInfo();
@@ -36,7 +45,7 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public List<GroupMsgVo> queryMsgById(Integer groupId) {
-        List<ImGroupMsg> msgList=groupInfoRepository.queryMsgByGroupId(groupId);
+        List<ImGroupMsg> msgList=groupMsgMapper.queryMsgByGroupId(groupId);
         List<GroupMsgVo> groupMsgVos=new ArrayList<>();
         msgList.forEach(msg->{
             GroupMsgVo vo=new GroupMsgVo();
@@ -50,5 +59,28 @@ public class GroupServiceImpl implements GroupService {
             groupMsgVos.add(vo);
         });
         return groupMsgVos;
+    }
+
+    @Override
+    public List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid) {
+        List<ImGroupMsg> msgList=groupMsgMapper.queryGroupMsgByMid(groupId,mid);
+        List<GroupMsgVo> groupMsgVos=new ArrayList<>();
+        msgList.forEach(msg->{
+            GroupMsgVo vo=new GroupMsgVo();
+            vo.setGroupId(groupId);
+            vo.setAvatar(msg.getSendAvatar());
+            vo.setCreateTime(msg.getSendTime());
+            vo.setContent(msg.getContent());
+            vo.setMid(msg.getMid());
+            vo.setOwnerName(msg.getSendName());
+            vo.setOwnerUid(msg.getSendId());
+            groupMsgVos.add(vo);
+        });
+        return groupMsgVos;
+    }
+
+    @Override
+    public List<ImUser> queryUsersByGroupId(Integer groupId) {
+        return groupMemberMapper.queryUsersByGroupId(groupId);
     }
 }

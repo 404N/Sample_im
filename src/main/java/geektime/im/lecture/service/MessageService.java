@@ -2,6 +2,7 @@ package geektime.im.lecture.service;
 
 
 import geektime.im.lecture.entity.ImUser;
+import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.MessageVO;
@@ -56,7 +57,7 @@ public interface MessageService {
 
     /**
      * 根据邮箱查找用户登陆之后的首页信息
-     * @param email
+     * @param uid
      * @return
      */
     LoginResVo queryLoginData(Integer uid);
@@ -66,5 +67,29 @@ public interface MessageService {
      * @param groupId
      * @return
      */
-    List<MessageVO> queryGroupMsg(Integer groupId);
+    List<GroupMsgVo> queryGroupMsg(Integer groupId);
+
+    /**
+     * 查询大于mid的所有消息
+     * @param groupId
+     * @param mid
+     * @return
+     */
+    List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid);
+
+    /**
+     * 查询群组里的所有用户
+     * @param groupId
+     * @return
+     */
+    List<ImUser> queryUsersByGroupId(Integer groupId);
+
+    /**
+     * 发送群聊消息
+     * @param sId
+     * @param gId
+     * @param groupContent
+     * @return
+     */
+    GroupMsgVo sendGroupMessage(Integer sId, Integer gId, String groupContent);
 }

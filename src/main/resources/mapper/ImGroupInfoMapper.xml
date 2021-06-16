@@ -16,9 +16,5 @@
     from im_group_info
     where group_name like CONCAT('%',#{groupName,jdbcType=VARCHAR},'%')
   </select>
-  <select id="queryMsgByGroupId" resultType="geektime.im.lecture.entity.ImGroupMsg">
-    select *
-    from im_group_msg
-    where group_id=#{groupId,jdbcType=INTEGER}
-  </select>
+
 </mapper>

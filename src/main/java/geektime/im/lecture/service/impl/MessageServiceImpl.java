@@ -8,10 +8,10 @@ import geektime.im.lecture.dao.ImMsgContentMapper;
 import geektime.im.lecture.dao.ImMsgRelationMapper;
 import geektime.im.lecture.dao.ImUserMapper;
 import geektime.im.lecture.entity.*;
-import geektime.im.lecture.response.ResultUtil;
 import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.service.MessageService;
 import geektime.im.lecture.service.UserService;
+import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.MessageVO;
@@ -20,6 +20,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 
@@ -41,6 +42,7 @@ public class MessageServiceImpl implements MessageService {
     @Autowired
     private GroupService groupService;
 
+
     @Override
     @Transactional
     public MessageVO sendNewMsg(Integer senderUid, Integer recipientUid, String content, Integer msgType) {
@@ -53,7 +55,7 @@ public class MessageServiceImpl implements MessageService {
         messageContent.setMsgType(msgType);
         messageContent.setCreateTime(currentTime);
         contentRepository.insertGetMid(messageContent);
-        Integer mid=messageContent.getMid();
+        Integer mid = messageContent.getMid();
         /**存发件人的发件箱*/
         ImMsgRelation messageRelationSender = new ImMsgRelation();
         messageRelationSender.setMid(mid);
@@ -206,7 +208,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public LoginResVo queryLoginData(Integer uid) {
-        LoginResVo loginResVo=new LoginResVo();
+        LoginResVo loginResVo = new LoginResVo();
         ImUser loginUser = userService.getUserByUid(uid);
         loginResVo.setLoginUser(loginUser);
         List<ImUser> otherUsers = userService.getAllUsersExcept(loginUser);
@@ -217,7 +219,44 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageVO> queryGroupMsg(Integer groupId) {
+    public List<GroupMsgVo> queryGroupMsg(Integer groupId) {
         return groupService.queryMsgById(groupId);
+    }
+
+    @Override
+    public List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid) {
+        return groupService.queryGroupMsgByMid(groupId, mid);
+    }
+
+    @Override
+    public List<ImUser> queryUsersByGroupId(Integer groupId) {
+        //先取redis
+        List<ImUser> imUserList;
+        Object list = redisTemplate.opsForValue().get(groupId.toString() + Constants.GROUP_MESSAGE_SUFFIX);
+        if (null != list) {
+            imUserList = JSONObject.parseArray(list.toString(), ImUser.class);;
+        }else{
+            imUserList = groupService.queryUsersByGroupId(groupId);
+            String json=JSONObject.toJSONString(imUserList);
+            //存redis，设置期限为1天
+            redisTemplate.opsForValue().set(groupId.toString() + Constants.GROUP_MESSAGE_SUFFIX, json, Duration.ofDays(1));
+        }
+        return imUserList;
+    }
+
+    @Override
+    @Transactional
+    public GroupMsgVo sendGroupMessage(Integer sId, Integer gId, String groupContent) {
+        Date currentTime = new Date();
+        GroupMsgVo groupMsgVo=new GroupMsgVo();
+        groupMsgVo.setGroupId(gId);
+        groupMsgVo.setContent(groupContent);
+        groupMsgVo.setCreateTime(currentTime);
+        groupMsgVo.setOwnerUid(sId);
+        ImUser user=userRepository.findByUid(sId);
+        groupMsgVo.setAvatar(user.getAvatar());
+        groupMsgVo.setOwnerName(user.getUsername());
+        redisTemplate.convertAndSend(Constants.WEBSOCKET_GROUP_MSG_TOPIC, JSONObject.toJSONString(groupMsgVo));
+        return groupMsgVo;
     }
 }

@@ -33,6 +33,9 @@ public class SpringSessionRedisConfiguration {
     @Autowired
     private NewMessageListener newMessageListener;
 
+    @Autowired
+    private GroupMessageListener groupMessageListener;
+
     @Bean
     JedisConnectionFactory jedisConnectionFactory() {
         RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(redisHostName, redisPort);
@@ -67,6 +70,7 @@ public class SpringSessionRedisConfiguration {
 
         container.setConnectionFactory(jedisConnectionFactory());
         container.addMessageListener(new MessageListenerAdapter(newMessageListener), new ChannelTopic(Constants.WEBSOCKET_MSG_TOPIC));
+        container.addMessageListener(new MessageListenerAdapter(groupMessageListener), new ChannelTopic(Constants.WEBSOCKET_GROUP_MSG_TOPIC));
 
         return container;
     }

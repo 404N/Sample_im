@@ -14,7 +14,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 import org.springframework.stereotype.Component;
 
 @Component
-public class NewMessageListener implements MessageListener {
+public class GroupMessageListener implements MessageListener {
 
     private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
@@ -24,18 +24,17 @@ public class NewMessageListener implements MessageListener {
     StringRedisSerializer stringRedisSerializer = new StringRedisSerializer();
     private static final RedisSerializer<String> valueSerializer = new GenericToStringSerializer(Object.class);
 
-
     @Override
     public void onMessage(Message message, byte[] pattern) {
         String topic = stringRedisSerializer.deserialize(message.getChannel());
         String jsonMsg = valueSerializer.deserialize(message.getBody());
         logger.info("Message Received --> pattern: {}，topic:{}，message: {}", new String(pattern), topic, jsonMsg);
         JSONObject msgJson = JSONObject.parseObject(jsonMsg);
-        long otherUid = msgJson.getLong("otherUid");
+        Integer groupId = msgJson.getInteger("groupId");
+        Integer sendId = msgJson.getInteger("senderUid");
         JSONObject pushJson = new JSONObject();
-        pushJson.put("type", 4);
+        pushJson.put("type", 101);
         pushJson.put("data", msgJson);
-        websocketRouterHandler.pushMsg(otherUid, pushJson);
-
+        websocketRouterHandler.pushGroupMsg(groupId, sendId, pushJson);
     }
 }
