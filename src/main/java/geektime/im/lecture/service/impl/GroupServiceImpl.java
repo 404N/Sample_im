@@ -38,6 +38,8 @@ public class GroupServiceImpl implements GroupService {
         groupInfoRepository.insert(groupInfo);
     }
 
+
+
     @Override
     public List<GroupVo> queryGroup(String groupName) {
         return groupInfoRepository.queryGroupByName(groupName);
@@ -82,5 +84,10 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public List<ImUser> queryUsersByGroupId(String groupId) {
         return groupMemberMapper.queryUsersByGroupId(groupId);
+    }
+
+    @Override
+    public ImGroupInfo queryGroupByGroupId(String groupId) {
+        return groupInfoRepository.queryGroupByGroupId(groupId);
     }
 }

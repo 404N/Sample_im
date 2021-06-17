@@ -46,7 +46,7 @@ public interface MessageService {
      * @param ownerUid
      * @return
      */
-    MessageContactVO queryContacts(String ownerUid);
+    MessageContactVO queryContacts(ImUser ownerUser);
 
     /**
      * 查询某人总未读

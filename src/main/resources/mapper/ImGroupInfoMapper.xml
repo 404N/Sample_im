@@ -7,6 +7,7 @@
     -->
     <id column="group_id" jdbcType="VARCHAR" property="groupId" />
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
+    <result column="group_avatar" jdbcType="VARCHAR" property="groupAvatar" />
     <result column="group_user_id" jdbcType="VARCHAR" property="groupUserId" />
     <result column="group_news_id" jdbcType="INTEGER" property="groupNewsId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -15,6 +16,11 @@
     select group_id,group_name
     from im_group_info
     where group_name like CONCAT('%',#{groupName,jdbcType=VARCHAR},'%')
+  </select>
+  <select id="queryGroupByGroupId" resultType="geektime.im.lecture.entity.ImGroupInfo">
+    select *
+    from im_group_info
+    where group_id=#{groupId,jdbcType=VARCHAR}
   </select>
 
 </mapper>

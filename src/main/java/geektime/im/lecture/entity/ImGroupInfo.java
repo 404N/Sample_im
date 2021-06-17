@@ -13,6 +13,10 @@ public class ImGroupInfo {
     @Column(name = "group_name")
     private String groupName;
 
+
+    @Column(name = "group_avatar")
+    private String groupAvatar;
+
     @Column(name = "group_user_id")
     private String groupUserId;
 
@@ -90,5 +94,13 @@ public class ImGroupInfo {
      */
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getGroupAvatar() {
+        return groupAvatar;
+    }
+
+    public void setGroupAvatar(String groupAvatar) {
+        this.groupAvatar = groupAvatar;
     }
 }

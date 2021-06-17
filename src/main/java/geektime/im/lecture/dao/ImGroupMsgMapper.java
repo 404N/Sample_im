@@ -34,4 +34,6 @@ public interface ImGroupMsgMapper extends CustomerMapper<ImGroupMsg> {
      */
     Integer insertGetMid(@Param("content") ImGroupMsg content);
 
+
+    ImGroupMsg queryMsgByMid(Integer mid);
 }

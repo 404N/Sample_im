@@ -1,5 +1,6 @@
 package geektime.im.lecture.service;
 
+import geektime.im.lecture.entity.ImGroupInfo;
 import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.GroupVo;
@@ -44,4 +45,11 @@ public interface GroupService {
      * @return
      */
     List<ImUser> queryUsersByGroupId(String groupId);
+
+    /**
+     * 通过群id查找群信息
+     * @param groupId
+     * @return
+     */
+    ImGroupInfo queryGroupByGroupId(String groupId);
 }

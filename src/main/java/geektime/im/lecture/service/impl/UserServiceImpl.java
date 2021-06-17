@@ -1,27 +1,24 @@
 package geektime.im.lecture.service.impl;
 
-import geektime.im.lecture.dao.ImMsgContactMapper;
-import geektime.im.lecture.dao.ImMsgContentMapper;
-import geektime.im.lecture.dao.ImMsgRelationMapper;
-import geektime.im.lecture.dao.ImUserMapper;
+import geektime.im.lecture.Constants;
+import geektime.im.lecture.dao.*;
+import geektime.im.lecture.entity.ImGroupMsg;
 import geektime.im.lecture.entity.ImMsgContact;
 import geektime.im.lecture.entity.ImMsgContent;
 import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.exceptions.BaseException;
 import geektime.im.lecture.response.CommonEnum;
 import geektime.im.lecture.service.UserService;
-import geektime.im.lecture.utils.UuidUtil;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.UserVo;
+import org.checkerframework.checker.units.qual.A;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -40,6 +37,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private ImMsgContentMapper contentRepository;
 
+    @Autowired
+    private ImGroupMsgMapper groupMsgMapper;
+
     @Override
     public UserVo login(String email, String password) {
         ImUser user = userRepository.findByEmail(email);
@@ -53,7 +53,7 @@ public class UserServiceImpl implements UserService {
             log.warn(user.getUsername() + " failed to log in!");
             throw new BaseException(CommonEnum.ACCOUNT_WRONG);
         }
-        UserVo userVo=new UserVo();
+        UserVo userVo = new UserVo();
         userVo.setUid(user.getUid());
         userVo.setUsername(user.getUsername());
         userVo.setAvatar(user.getAvatar());
@@ -74,36 +74,6 @@ public class UserServiceImpl implements UserService {
         return otherUsers;
     }
 
-    @Override
-    public MessageContactVO getContacts(ImUser ownerUser) {
-        List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUser.getUid());
-        if (contacts != null) {
-            Integer totalUnread = 0;
-            Object totalUnreadObj = redisTemplate.opsForValue().get(ownerUser.getUid() + "_T");
-            if (null != totalUnreadObj) {
-                totalUnread = Integer.parseInt((String) totalUnreadObj);
-            }
-            MessageContactVO contactVO = new MessageContactVO(ownerUser.getUid(), ownerUser.getUsername(), ownerUser.getAvatar(), totalUnread);
-            contacts.forEach(contact -> {
-                System.out.println(1231);
-                System.out.println(contact.getOtherUid());
-                Integer mid = contact.getMid();
-                ImMsgContent contentVO = contentRepository.findByMid(mid);
-                ImUser otherUser = userRepository.findByUid(contact.getOtherUid());
-                if (null != contentVO) {
-                    Integer convUnread = 0;
-                    Object convUnreadObj = redisTemplate.opsForHash().get(ownerUser.getUid() + "_C", otherUser.getUid());
-                    if (null != convUnreadObj) {
-                        convUnread = Integer.parseInt((String) convUnreadObj);
-                    }
-                    MessageContactVO.ContactInfo contactInfo = contactVO.new ContactInfo(otherUser.getUid(), otherUser.getUsername(), otherUser.getAvatar(), mid, contact.getType(), contentVO.getContent(), convUnread, contact.getCreateTime());
-                    contactVO.appendContact(contactInfo);
-                }
-            });
-            return contactVO;
-        }
-        return null;
-    }
 
     @Override
     public ImUser getUserByEmail(String email) {
@@ -116,17 +86,17 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserVo register(String email, String password,String name) {
-        if(null!=userRepository.findByEmail(email)){
+    public UserVo register(String email, String password, String name) {
+        if (null != userRepository.findByEmail(email)) {
             throw new BaseException(CommonEnum.ACCOUNT_EXIST);
         }
-        ImUser user=new ImUser();
+        ImUser user = new ImUser();
         user.setUsername(name);
         user.setEmail(email);
         user.setPassword(password);
         user.setAvatar("lisi.png");
         userRepository.insert(user);
-        UserVo userVo=new UserVo();
+        UserVo userVo = new UserVo();
         userVo.setEmail(email);
         userVo.setUsername(name);
         userVo.setAvatar(user.getAvatar());

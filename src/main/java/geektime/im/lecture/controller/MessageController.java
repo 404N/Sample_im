@@ -52,15 +52,4 @@ public class MessageController {
         }
     }
 
-    @GetMapping(path = "/queryContacts")
-    public ResultBody queryContacts(@RequestParam String ownerUid) {
-        MessageContactVO contactVO = messageService.queryContacts(ownerUid);
-        if (contactVO != null) {
-            return ResultUtil.success(JSONObject.toJSONString(contactVO));
-        } else {
-            return ResultUtil.success();
-        }
-    }
-
-
 }

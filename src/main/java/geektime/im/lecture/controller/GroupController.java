@@ -24,9 +24,10 @@ public class GroupController {
         return ResultUtil.success();
     }
 
-    @GetMapping(path = "queryGroup")
+    @PostMapping(path = "queryGroup")
     public ResultBody queryGroup(@RequestParam String groupName) {
         List<GroupVo> groupVoList=groupService.queryGroup(groupName);
         return ResultUtil.success(groupVoList);
     }
+    
 }

@@ -164,31 +164,40 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageContactVO queryContacts(String ownerUid) {
-        List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUid);
+    public MessageContactVO queryContacts(ImUser ownerUser) {
+        List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUser.getUid());
         if (contacts != null) {
-            ImUser user = userRepository.findByUid(ownerUid);
             Integer totalUnread = 0;
-            Object totalUnreadObj = redisTemplate.opsForValue().get(user.getUid() + Constants.TOTAL_UNREAD_SUFFIX);
-            if (null != totalUnreadObj) {
-                totalUnread = Integer.parseInt((String) totalUnreadObj);
-            }
-
-            MessageContactVO contactVO = new MessageContactVO(user.getUid(), user.getUsername(), user.getAvatar(), totalUnread);
+            MessageContactVO contactVO = new MessageContactVO(ownerUser.getUid(), ownerUser.getUsername(), ownerUser.getAvatar(), totalUnread);
             contacts.forEach(contact -> {
                 Integer mid = contact.getMid();
-                ImMsgContent contentVO = contentRepository.findByMid(mid);
-                ImUser otherUser = userRepository.findByUid(contact.getOtherUid());
-
-                if (null != contentVO) {
-                    Integer convUnread = 0;
-                    Object convUnreadObj = redisTemplate.opsForHash().get(user.getUid() + Constants.CONVERSION_UNREAD_SUFFIX, otherUser.getUid());
-                    if (null != convUnreadObj) {
-                        convUnread = Integer.parseInt((String) convUnreadObj);
+                if (contact.getType() > 1) {
+                    ImMsgContent contentVO = contentRepository.findByMid(mid);
+                    ImUser otherUser = userRepository.findByUid(contact.getOtherUid());
+                    if (null != contentVO) {
+                        Integer convUnread = 0;
+                        Object convUnreadObj = redisTemplate.opsForHash().get(ownerUser.getUid() + Constants.CONVERSION_UNREAD_SUFFIX, otherUser.getUid());
+                        if (null != convUnreadObj) {
+                            convUnread = Integer.parseInt((String) convUnreadObj);
+                        }
+                        MessageContactVO.ContactInfo contactInfo = contactVO.new ContactInfo(otherUser.getUid(), otherUser.getUsername(), otherUser.getAvatar(), mid, contact.getType(), contentVO.getContent(), convUnread, contact.getCreateTime());
+                        contactVO.appendContact(contactInfo);
                     }
-                    MessageContactVO.ContactInfo contactInfo = contactVO.new ContactInfo(otherUser.getUid(), otherUser.getUsername(), otherUser.getAvatar(), mid, contact.getType(), contentVO.getContent(), convUnread, contact.getCreateTime());
-                    contactVO.appendContact(contactInfo);
+                } else {
+                    //最近群聊
+                    ImGroupMsg groupMsg = groupMsgMapper.queryMsgByMid(mid);
+                    ImGroupInfo groupInfo = groupService.queryGroupByGroupId(groupMsg.getGroupId());
+                    if (null != groupMsg) {
+                        Integer convUnread = 0;
+                        Object convUnreadObj = redisTemplate.opsForHash().get(ownerUser.getUid() + Constants.GROUP_MESSAGE_SUFFIX, groupMsg.getGroupId());
+                        if (null != convUnreadObj) {
+                            convUnread = Integer.parseInt((String) convUnreadObj);
+                        }
+                        MessageContactVO.ContactInfo contactInfo = contactVO.new ContactInfo(groupMsg.getGroupId(), groupInfo.getGroupName(), groupInfo.getGroupAvatar(), mid, contact.getType(), groupMsg.getContent(), convUnread, contact.getCreateTime());
+                        contactVO.appendContact(contactInfo);
+                    }
                 }
+
             });
             return contactVO;
         }
@@ -212,7 +221,7 @@ public class MessageServiceImpl implements MessageService {
         loginResVo.setLoginUser(loginUser);
         List<ImUser> otherUsers = userService.getAllUsersExcept(loginUser);
         loginResVo.setOtherUsers(otherUsers);
-        MessageContactVO contactVO = userService.getContacts(loginUser);
+        MessageContactVO contactVO = queryContacts(loginUser);
         loginResVo.setContactVO(contactVO);
         return loginResVo;
     }
@@ -233,10 +242,11 @@ public class MessageServiceImpl implements MessageService {
         List<ImUser> imUserList;
         Object list = redisTemplate.opsForValue().get(groupId + Constants.GROUP_MESSAGE_SUFFIX);
         if (null != list) {
-            imUserList = JSONObject.parseArray(list.toString(), ImUser.class);;
-        }else{
+            imUserList = JSONObject.parseArray(list.toString(), ImUser.class);
+            ;
+        } else {
             imUserList = groupService.queryUsersByGroupId(groupId);
-            String json=JSONObject.toJSONString(imUserList);
+            String json = JSONObject.toJSONString(imUserList);
             //存redis，设置期限为1天
             redisTemplate.opsForValue().set(groupId.toString() + Constants.GROUP_MESSAGE_SUFFIX, json, Duration.ofDays(1));
         }
@@ -247,15 +257,15 @@ public class MessageServiceImpl implements MessageService {
     @Transactional
     public GroupMsgVo sendGroupMessage(String sId, String gId, String groupContent) {
         Date currentTime = new Date();
-        GroupMsgVo groupMsgVo=new GroupMsgVo();
+        GroupMsgVo groupMsgVo = new GroupMsgVo();
         groupMsgVo.setGroupId(gId);
         groupMsgVo.setContent(groupContent);
         groupMsgVo.setCreateTime(currentTime);
         groupMsgVo.setOwnerUid(sId);
-        ImUser user=userRepository.findByUid(sId);
+        ImUser user = userRepository.findByUid(sId);
         groupMsgVo.setAvatar(user.getAvatar());
         groupMsgVo.setOwnerName(user.getUsername());
-        ImGroupMsg imGroupMsg=new ImGroupMsg();
+        ImGroupMsg imGroupMsg = new ImGroupMsg();
         imGroupMsg.setGroupId(gId);
         imGroupMsg.setSendId(sId);
         imGroupMsg.setContent(groupContent);
@@ -265,18 +275,18 @@ public class MessageServiceImpl implements MessageService {
         //将消息存入群聊消息记录表
         groupMsgMapper.insertGetMid(imGroupMsg);
         //更新最近联系人表
-        Integer mid=imGroupMsg.getMid();
-        ImMsgContact imMsgContact=contactRepository.findMsgByOwnerIdAndOtherId(sId,gId);
-        if(null==imMsgContact){
+        Integer mid = imGroupMsg.getMid();
+        ImMsgContact imMsgContact = contactRepository.findMsgByOwnerIdAndOtherId(sId, gId);
+        if (null == imMsgContact) {
             //若为空，则插入一条记录
-            imMsgContact=new ImMsgContact();
+            imMsgContact = new ImMsgContact();
             imMsgContact.setMid(mid);
             imMsgContact.setOwnerUid(sId);
             imMsgContact.setOtherUid(gId);
             imMsgContact.setCreateTime(currentTime);
             imMsgContact.setType(2);
             contactRepository.insert(imMsgContact);
-        }else{
+        } else {
             //否则更新该记录
             imMsgContact.setMid(mid);
             contactRepository.updateContact(imMsgContact);

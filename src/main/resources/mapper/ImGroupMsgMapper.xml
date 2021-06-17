@@ -1,31 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="geektime.im.lecture.dao.ImGroupMsgMapper">
-  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImGroupMsg">
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <id column="mid" jdbcType="INTEGER" property="mid" />
-    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
-    <result column="send_id" jdbcType="VARCHAR" property="sendId" />
-    <result column="send_name" jdbcType="VARCHAR" property="sendName" />
-    <result column="send_avatar" jdbcType="VARCHAR" property="sendAvatar" />
-    <result column="content" jdbcType="VARCHAR" property="content" />
-    <result column="send_time" jdbcType="TIMESTAMP" property="sendTime" />
-  </resultMap>
-  <select id="queryMsgByGroupId" resultType="geektime.im.lecture.entity.ImGroupMsg">
-    select *
-    from im_group_msg
-    where group_id=#{groupId,jdbcType=VARCHAR}
-  </select>
-  <select id="queryGroupMsgByMid" resultType="geektime.im.lecture.entity.ImGroupMsg">
-    select *
-    from im_group_msg
-    where group_id=#{groupId,jdbcType=VARCHAR} and <![CDATA[ mid>#{lastMid,jdbcType=INTEGER} ]]>
-  </select>
-  <insert id="insertGetMid" keyColumn="mid" keyProperty="mid" useGeneratedKeys="true">
-    INSERT INTO im_group_msg(group_id, send_id, send_name, send_avatar, content,send_time)
-    VALUES (#{content.groupId}, #{content.senderId}, #{content.sendName}, #{content.sendAvatar},
-            #{content.content},#{content.sendTime});
-  </insert>
+    <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.ImGroupMsg">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <id column="mid" jdbcType="INTEGER" property="mid"/>
+        <result column="group_id" jdbcType="VARCHAR" property="groupId"/>
+        <result column="send_id" jdbcType="VARCHAR" property="sendId"/>
+        <result column="send_name" jdbcType="VARCHAR" property="sendName"/>
+        <result column="send_avatar" jdbcType="VARCHAR" property="sendAvatar"/>
+        <result column="content" jdbcType="VARCHAR" property="content"/>
+        <result column="send_time" jdbcType="TIMESTAMP" property="sendTime"/>
+    </resultMap>
+    <select id="queryMsgByGroupId" resultType="geektime.im.lecture.entity.ImGroupMsg">
+        select *
+        from im_group_msg
+        where group_id = #{groupId,jdbcType=VARCHAR}
+    </select>
+    <select id="queryGroupMsgByMid" resultType="geektime.im.lecture.entity.ImGroupMsg">
+        select *
+        from im_group_msg
+        where group_id = #{groupId,jdbcType=VARCHAR}
+          and <![CDATA[ mid > #{lastMid,jdbcType=INTEGER}
+        ]]>
+    </select>
+    <select id="queryMsgByMid" resultType="geektime.im.lecture.entity.ImGroupMsg">
+        select *
+        from im_group_msg
+        where mid = #{mid,jdbcType=INTEGER}
+    </select>
+    <insert id="insertGetMid" keyColumn="mid" keyProperty="mid" useGeneratedKeys="true">
+        INSERT INTO im_group_msg(group_id, send_id, send_name, send_avatar, content, send_time)
+        VALUES (#{content.groupId}, #{content.senderId}, #{content.sendName}, #{content.sendAvatar},
+                #{content.content}, #{content.sendTime});
+    </insert>
 </mapper>

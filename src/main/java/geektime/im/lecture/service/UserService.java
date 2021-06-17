@@ -16,8 +16,6 @@ public interface UserService {
 
     List<ImUser> getAllUsersExcept(ImUser exceptUser);
 
-    MessageContactVO getContacts(ImUser ownerUser);
-
     ImUser getUserByEmail(String email);
 
     ImUser getUserByUid(String uid);
