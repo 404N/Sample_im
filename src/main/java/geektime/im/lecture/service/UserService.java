@@ -21,4 +21,6 @@ public interface UserService {
     ImUser getUserByEmail(String email);
 
     ImUser getUserByUid(Integer uid);
+
+    UserVo register(String email, String password, String name);
 }

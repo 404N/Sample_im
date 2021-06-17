@@ -20,11 +20,11 @@ public class MessageContactVO {
     }
 
     public class ContactInfo {
-        private Integer otherUid;
+        private Integer otherUid;//联系人id或群聊id
         private String otherName;
         private String otherAvatar;
         private Integer mid;
-        private Integer type;
+        private Integer type; //2表示群聊
         private String content;
 
         public Integer getConvUnread() {

@@ -10,6 +10,7 @@ import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.exceptions.BaseException;
 import geektime.im.lecture.response.CommonEnum;
 import geektime.im.lecture.service.UserService;
+import geektime.im.lecture.utils.UuidUtil;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.UserVo;
 import org.slf4j.Logger;
@@ -20,6 +21,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -111,5 +113,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public ImUser getUserByUid(Integer uid) {
         return userRepository.findByUid(uid);
+    }
+
+    @Override
+    public UserVo register(String email, String password,String name) {
+        if(null!=userRepository.findByEmail(email)){
+            throw new BaseException(CommonEnum.ACCOUNT_EXIST);
+        }
+        ImUser user=new ImUser();
+        user.setUsername(name);
+        user.setEmail(email);
+        user.setPassword(password);
+        user.setAvatar("lisi.png");
+        userRepository.insert(user);
+        return null;
     }
 }

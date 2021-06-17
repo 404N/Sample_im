@@ -34,5 +34,12 @@ public class UserController {
         return ResultUtil.success(loginUser);
     }
 
+    @RequestMapping(path = "/api/register",method = RequestMethod.POST)
+    @ResponseBody
+    public ResultBody register(@RequestParam String email,@RequestParam String name, @RequestParam String password) {
+        UserVo loginUser = userService.register(email, password,name);
+        return ResultUtil.success(loginUser);
+    }
+
 
 }
