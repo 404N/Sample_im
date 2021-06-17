@@ -22,12 +22,12 @@ public interface ImUserMapper extends CustomerMapper<ImUser> {
      * @param uid
      * @return
      */
-    List<ImUser> findUsersByUidIsNot(Integer uid);
+    List<ImUser> findUsersByUidIsNot(String uid);
 
     /**
      * 通过uid查找用户
      * @param uid
      * @return
      */
-    ImUser findByUid(Integer uid);
+    ImUser findByUid(String uid);
 }

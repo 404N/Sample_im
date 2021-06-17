@@ -5,9 +5,9 @@ import java.util.Date;
 public class MessageVO {
     private Integer mid;
     private String content;
-    private Integer ownerUid;
+    private String ownerUid;
     private Integer type;
-    private Integer otherUid;
+    private String otherUid;
     private Date createTime;
     private String ownerUidAvatar;
     private String otherUidAvatar;
@@ -22,7 +22,7 @@ public class MessageVO {
         return otherName;
     }
 
-    public MessageVO(Integer mid, String content, Integer ownerUid, Integer type, Integer otherUid, Date createTime, String ownerUidAvatar, String otherUidAvatar, String ownerName, String otherName) {
+    public MessageVO(Integer mid, String content, String ownerUid, Integer type, String otherUid, Date createTime, String ownerUidAvatar, String otherUidAvatar, String ownerName, String otherName) {
         this.mid = mid;
         this.content = content;
         this.ownerUid = ownerUid;
@@ -43,7 +43,7 @@ public class MessageVO {
         return content;
     }
 
-    public Integer getOwnerUid() {
+    public String getOwnerUid() {
         return ownerUid;
     }
 
@@ -51,7 +51,7 @@ public class MessageVO {
         return type;
     }
 
-    public Integer getOtherUid() {
+    public String getOtherUid() {
         return otherUid;
     }
 

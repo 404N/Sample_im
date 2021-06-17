@@ -7,13 +7,13 @@ import javax.persistence.*;
 public class ImMsgRelation {
     @Id
     @Column(name = "owner_uid")
-    private Integer ownerUid;
+    private String ownerUid;
 
     @Id
     private Integer mid;
 
     @Column(name = "other_uid")
-    private Integer otherUid;
+    private String otherUid;
 
     private Integer type;
 
@@ -23,14 +23,14 @@ public class ImMsgRelation {
     /**
      * @return owner_uid
      */
-    public Integer getOwnerUid() {
+    public String getOwnerUid() {
         return ownerUid;
     }
 
     /**
      * @param ownerUid
      */
-    public void setOwnerUid(Integer ownerUid) {
+    public void setOwnerUid(String ownerUid) {
         this.ownerUid = ownerUid;
     }
 
@@ -51,14 +51,14 @@ public class ImMsgRelation {
     /**
      * @return other_uid
      */
-    public Integer getOtherUid() {
+    public String getOtherUid() {
         return otherUid;
     }
 
     /**
      * @param otherUid
      */
-    public void setOtherUid(Integer otherUid) {
+    public void setOtherUid(String otherUid) {
         this.otherUid = otherUid;
     }
 

@@ -15,7 +15,7 @@ public interface GroupService {
      * @param userId
      * @param groupName
      */
-    void createGroup(Integer userId,String groupName);
+    void createGroup(String userId,String groupName);
 
     /**
      * 查询群聊接口
@@ -28,7 +28,7 @@ public interface GroupService {
      * @param groupId
      * @return
      */
-    List<GroupMsgVo> queryMsgById(Integer groupId);
+    List<GroupMsgVo> queryMsgById(String groupId);
 
     /**
      * 查找大于mid的所有消息
@@ -36,12 +36,12 @@ public interface GroupService {
      * @param mid
      * @return
      */
-    List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid);
+    List<GroupMsgVo> queryGroupMsgByMid(String groupId, Integer mid);
 
     /**
      * 查找群聊的所有用户
      * @param groupId
      * @return
      */
-    List<ImUser> queryUsersByGroupId(Integer groupId);
+    List<ImUser> queryUsersByGroupId(String groupId);
 }

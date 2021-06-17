@@ -41,5 +41,4 @@ public class UserController {
         return ResultUtil.success(loginUser);
     }
 
-
 }

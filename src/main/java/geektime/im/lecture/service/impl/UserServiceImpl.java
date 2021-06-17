@@ -63,7 +63,7 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public List<ImUser> getAllUsersExcept(Integer exceptUid) {
+    public List<ImUser> getAllUsersExcept(String exceptUid) {
         List<ImUser> otherUsers = userRepository.findUsersByUidIsNot(exceptUid);
         return otherUsers;
     }
@@ -111,7 +111,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ImUser getUserByUid(Integer uid) {
+    public ImUser getUserByUid(String uid) {
         return userRepository.findByUid(uid);
     }
 
@@ -126,6 +126,10 @@ public class UserServiceImpl implements UserService {
         user.setPassword(password);
         user.setAvatar("lisi.png");
         userRepository.insert(user);
-        return null;
+        UserVo userVo=new UserVo();
+        userVo.setEmail(email);
+        userVo.setUsername(name);
+        userVo.setAvatar(user.getAvatar());
+        return userVo;
     }
 }

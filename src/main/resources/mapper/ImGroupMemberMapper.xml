@@ -6,13 +6,13 @@
       WARNING - @mbg.generated
     -->
     <id column="id" jdbcType="INTEGER" property="id" />
-    <result column="group_id" jdbcType="INTEGER" property="groupId" />
-    <result column="user_id" jdbcType="INTEGER" property="userId" />
+    <result column="group_id" jdbcType="VARCHAR" property="groupId" />
+    <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="join_time" jdbcType="TIMESTAMP" property="joinTime" />
   </resultMap>
   <select id="queryUsersByGroupId" resultType="geektime.im.lecture.entity.ImUser">
     select *
     from im_group_member
-    where group_id=#{groupId,jdbcType=INTEGER}
+    where group_id=#{groupId,jdbcType=VARCHAR}
   </select>
 </mapper>

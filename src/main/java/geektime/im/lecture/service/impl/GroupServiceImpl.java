@@ -30,7 +30,7 @@ public class GroupServiceImpl implements GroupService {
     private ImGroupMemberMapper groupMemberMapper;
 
     @Override
-    public void createGroup(Integer userId, String groupName) {
+    public void createGroup(String userId, String groupName) {
         ImGroupInfo groupInfo=new ImGroupInfo();
         groupInfo.setGroupUserId(userId);
         groupInfo.setGroupName(groupName);
@@ -44,7 +44,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<GroupMsgVo> queryMsgById(Integer groupId) {
+    public List<GroupMsgVo> queryMsgById(String groupId) {
         List<ImGroupMsg> msgList=groupMsgMapper.queryMsgByGroupId(groupId);
         List<GroupMsgVo> groupMsgVos=new ArrayList<>();
         msgList.forEach(msg->{
@@ -62,7 +62,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid) {
+    public List<GroupMsgVo> queryGroupMsgByMid(String groupId, Integer mid) {
         List<ImGroupMsg> msgList=groupMsgMapper.queryGroupMsgByMid(groupId,mid);
         List<GroupMsgVo> groupMsgVos=new ArrayList<>();
         msgList.forEach(msg->{
@@ -80,7 +80,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<ImUser> queryUsersByGroupId(Integer groupId) {
+    public List<ImUser> queryUsersByGroupId(String groupId) {
         return groupMemberMapper.queryUsersByGroupId(groupId);
     }
 }

@@ -3,10 +3,7 @@ package geektime.im.lecture.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.Lists;
 import geektime.im.lecture.Constants;
-import geektime.im.lecture.dao.ImMsgContactMapper;
-import geektime.im.lecture.dao.ImMsgContentMapper;
-import geektime.im.lecture.dao.ImMsgRelationMapper;
-import geektime.im.lecture.dao.ImUserMapper;
+import geektime.im.lecture.dao.*;
 import geektime.im.lecture.entity.*;
 import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.service.MessageService;
@@ -15,6 +12,7 @@ import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.LoginResVo;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.MessageVO;
+import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -41,11 +39,12 @@ public class MessageServiceImpl implements MessageService {
     private UserService userService;
     @Autowired
     private GroupService groupService;
-
+    @Autowired
+    private ImGroupMsgMapper groupMsgMapper;
 
     @Override
     @Transactional
-    public MessageVO sendNewMsg(Integer senderUid, Integer recipientUid, String content, Integer msgType) {
+    public MessageVO sendNewMsg(String senderUid, String recipientUid, String content, Integer msgType) {
         Date currentTime = new Date();
         /**存内容*/
         ImMsgContent messageContent = new ImMsgContent();
@@ -121,18 +120,18 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<MessageVO> queryConversationMsg(Integer ownerUid, Integer otherUid) {
+    public List<MessageVO> queryConversationMsg(String ownerUid, String otherUid) {
         List<ImMsgRelation> relationList = relationRepository.findAllByOwnerUidAndOtherUidOrderByMidAsc(ownerUid, otherUid);
         return composeMessageVO(relationList, ownerUid, otherUid);
     }
 
     @Override
-    public List<MessageVO> queryNewerMsgFrom(Integer ownerUid, Integer otherUid, Integer fromMid) {
+    public List<MessageVO> queryNewerMsgFrom(String ownerUid, String otherUid, Integer fromMid) {
         List<ImMsgRelation> relationList = relationRepository.findAllByOwnerUidAndOtherUidSinceMid(ownerUid, otherUid, fromMid);
         return composeMessageVO(relationList, ownerUid, otherUid);
     }
 
-    private List<MessageVO> composeMessageVO(List<ImMsgRelation> relationList, Integer ownerUid, Integer otherUid) {
+    private List<MessageVO> composeMessageVO(List<ImMsgRelation> relationList, String ownerUid, String otherUid) {
         if (null != relationList && !relationList.isEmpty()) {
             /** 先拼接消息索引和内容 */
             List<MessageVO> msgList = Lists.newArrayList();
@@ -165,7 +164,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageContactVO queryContacts(Integer ownerUid) {
+    public MessageContactVO queryContacts(String ownerUid) {
         List<ImMsgContact> contacts = contactRepository.findMessageContactsByOwnerUid(ownerUid);
         if (contacts != null) {
             ImUser user = userRepository.findByUid(ownerUid);
@@ -197,7 +196,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public Integer queryTotalUnread(Integer ownerUid) {
+    public Integer queryTotalUnread(String ownerUid) {
         Integer totalUnread = 0;
         Object totalUnreadObj = redisTemplate.opsForValue().get(ownerUid + Constants.TOTAL_UNREAD_SUFFIX);
         if (null != totalUnreadObj) {
@@ -207,7 +206,7 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public LoginResVo queryLoginData(Integer uid) {
+    public LoginResVo queryLoginData(String uid) {
         LoginResVo loginResVo = new LoginResVo();
         ImUser loginUser = userService.getUserByUid(uid);
         loginResVo.setLoginUser(loginUser);
@@ -219,20 +218,20 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<GroupMsgVo> queryGroupMsg(Integer groupId) {
+    public List<GroupMsgVo> queryGroupMsg(String groupId) {
         return groupService.queryMsgById(groupId);
     }
 
     @Override
-    public List<GroupMsgVo> queryGroupMsgByMid(Integer groupId, Integer mid) {
+    public List<GroupMsgVo> queryGroupMsgByMid(String groupId, Integer mid) {
         return groupService.queryGroupMsgByMid(groupId, mid);
     }
 
     @Override
-    public List<ImUser> queryUsersByGroupId(Integer groupId) {
+    public List<ImUser> queryUsersByGroupId(String groupId) {
         //先取redis
         List<ImUser> imUserList;
-        Object list = redisTemplate.opsForValue().get(groupId.toString() + Constants.GROUP_MESSAGE_SUFFIX);
+        Object list = redisTemplate.opsForValue().get(groupId + Constants.GROUP_MESSAGE_SUFFIX);
         if (null != list) {
             imUserList = JSONObject.parseArray(list.toString(), ImUser.class);;
         }else{
@@ -246,7 +245,7 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     @Transactional
-    public GroupMsgVo sendGroupMessage(Integer sId, Integer gId, String groupContent) {
+    public GroupMsgVo sendGroupMessage(String sId, String gId, String groupContent) {
         Date currentTime = new Date();
         GroupMsgVo groupMsgVo=new GroupMsgVo();
         groupMsgVo.setGroupId(gId);
@@ -256,6 +255,32 @@ public class MessageServiceImpl implements MessageService {
         ImUser user=userRepository.findByUid(sId);
         groupMsgVo.setAvatar(user.getAvatar());
         groupMsgVo.setOwnerName(user.getUsername());
+        ImGroupMsg imGroupMsg=new ImGroupMsg();
+        imGroupMsg.setGroupId(gId);
+        imGroupMsg.setSendId(sId);
+        imGroupMsg.setContent(groupContent);
+        imGroupMsg.setSendAvatar("zhangsan.png");
+        imGroupMsg.setSendTime(currentTime);
+        imGroupMsg.setSendName(user.getUsername());
+        //将消息存入群聊消息记录表
+        groupMsgMapper.insertGetMid(imGroupMsg);
+        //更新最近联系人表
+        Integer mid=imGroupMsg.getMid();
+        ImMsgContact imMsgContact=contactRepository.findMsgByOwnerIdAndOtherId(sId,gId);
+        if(null==imMsgContact){
+            //若为空，则插入一条记录
+            imMsgContact=new ImMsgContact();
+            imMsgContact.setMid(mid);
+            imMsgContact.setOwnerUid(sId);
+            imMsgContact.setOtherUid(gId);
+            imMsgContact.setCreateTime(currentTime);
+            imMsgContact.setType(2);
+            contactRepository.insert(imMsgContact);
+        }else{
+            //否则更新该记录
+            imMsgContact.setMid(mid);
+            contactRepository.updateContact(imMsgContact);
+        }
         redisTemplate.convertAndSend(Constants.WEBSOCKET_GROUP_MSG_TOPIC, JSONObject.toJSONString(groupMsgVo));
         return groupMsgVo;
     }

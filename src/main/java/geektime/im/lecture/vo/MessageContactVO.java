@@ -6,13 +6,13 @@ import java.util.Date;
 import java.util.List;
 
 public class MessageContactVO {
-    private Integer ownerUid;
+    private String ownerUid;
     private String ownerAvatar;
     private String ownerName;
     private Integer totalUnread;
     private List<ContactInfo> contactInfoList;
 
-    public MessageContactVO(Integer ownerUid, String ownerName, String ownerAvatar, Integer totalUnread) {
+    public MessageContactVO(String ownerUid, String ownerName, String ownerAvatar, Integer totalUnread) {
         this.ownerUid = ownerUid;
         this.ownerAvatar = ownerAvatar;
         this.ownerName = ownerName;
@@ -20,7 +20,7 @@ public class MessageContactVO {
     }
 
     public class ContactInfo {
-        private Integer otherUid;//联系人id或群聊id
+        private String otherUid;//联系人id或群聊id
         private String otherName;
         private String otherAvatar;
         private Integer mid;
@@ -34,7 +34,7 @@ public class MessageContactVO {
         private Integer convUnread;
         private Date createTime;
 
-        public ContactInfo(Integer otherUid, String otherName, String otherAvatar, Integer mid, Integer type, String content, Integer convUnread, Date createTime) {
+        public ContactInfo(String otherUid, String otherName, String otherAvatar, Integer mid, Integer type, String content, Integer convUnread, Date createTime) {
             this.otherUid = otherUid;
             this.otherName = otherName;
             this.otherAvatar = otherAvatar;
@@ -45,7 +45,7 @@ public class MessageContactVO {
             this.createTime = createTime;
         }
 
-        public Integer getOtherUid() {
+        public String getOtherUid() {
             return otherUid;
         }
 
@@ -86,7 +86,7 @@ public class MessageContactVO {
         contactInfoList.add(contactInfo);
     }
 
-    public Integer getOwnerUid() {
+    public String getOwnerUid() {
         return ownerUid;
     }
 

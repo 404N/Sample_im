@@ -23,7 +23,7 @@ public class MessageController {
 
 
     @PostMapping(path = "/sendMsg")
-    public ResultBody sendMsg(@RequestParam Integer senderUid, @RequestParam Integer recipientUid, String content, Integer msgType) {
+    public ResultBody sendMsg(@RequestParam String senderUid, @RequestParam String recipientUid, String content, Integer msgType) {
         MessageVO messageContent = messageService.sendNewMsg(senderUid, recipientUid, content, msgType);
         if (null != messageContent) {
             return ResultUtil.success(JSONObject.toJSONString(messageContent));
@@ -33,7 +33,7 @@ public class MessageController {
     }
 
     @GetMapping(path = "/queryMsg")
-    public ResultBody queryMsg(@RequestParam Integer ownerUid, @RequestParam Integer otherUid, Model model, HttpSession session) {
+    public ResultBody queryMsg(@RequestParam String ownerUid, @RequestParam String otherUid) {
         List<MessageVO> messageVO = messageService.queryConversationMsg(ownerUid, otherUid);
         if (messageVO != null) {
             return ResultUtil.success(JSONArray.toJSONString(messageVO));
@@ -43,7 +43,7 @@ public class MessageController {
     }
 
     @GetMapping(path = "/queryMsgSinceMid")
-    public ResultBody queryMsgSinceMid(@RequestParam Integer ownerUid, @RequestParam Integer otherUid, @RequestParam Integer lastMid) {
+    public ResultBody queryMsgSinceMid(@RequestParam String ownerUid, @RequestParam String otherUid, @RequestParam Integer lastMid) {
         List<MessageVO> messageVO = messageService.queryNewerMsgFrom(ownerUid, otherUid, lastMid);
         if (messageVO != null) {
             return ResultUtil.success(JSONArray.toJSONString(messageVO));
@@ -53,7 +53,7 @@ public class MessageController {
     }
 
     @GetMapping(path = "/queryContacts")
-    public ResultBody queryContacts(@RequestParam Integer ownerUid) {
+    public ResultBody queryContacts(@RequestParam String ownerUid) {
         MessageContactVO contactVO = messageService.queryContacts(ownerUid);
         if (contactVO != null) {
             return ResultUtil.success(JSONObject.toJSONString(contactVO));

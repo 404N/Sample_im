@@ -16,7 +16,7 @@ public interface ImMsgContactMapper extends CustomerMapper<ImMsgContact> {
      * @param ownerUid
      * @return
      */
-    List<ImMsgContact> findMessageContactsByOwnerUid(Integer ownerUid);
+    List<ImMsgContact> findMessageContactsByOwnerUid(String ownerUid);
 
     /**
      * 通过发送id和接收id查找关系
@@ -24,7 +24,7 @@ public interface ImMsgContactMapper extends CustomerMapper<ImMsgContact> {
      * @param otherUid
      * @return
      */
-    ImMsgContact findMsgByOwnerIdAndOtherId(Integer ownerUid,Integer otherUid);
+    ImMsgContact findMsgByOwnerIdAndOtherId(String ownerUid,String otherUid);
 
     /**
      * 更新联系记录

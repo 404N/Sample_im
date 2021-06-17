@@ -5,8 +5,8 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <result column="owner_uid" jdbcType="INTEGER" property="ownerUid" />
-    <result column="other_uid" jdbcType="INTEGER" property="otherUid" />
+    <result column="owner_uid" jdbcType="VARCHAR" property="ownerUid" />
+    <result column="other_uid" jdbcType="VARCHAR" property="otherUid" />
     <result column="mid" jdbcType="INTEGER" property="mid" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
@@ -14,8 +14,8 @@
   <update id="updateContact">
     update im_msg_contact
     set mid=#{imMsgContact.mid,jdbcType=INTEGER}
-    where owner_uid=#{imMsgContact.ownerUid,jdbcType=INTEGER} and
-          other_uid=#{imMsgContact.otherUid,jdbcType=INTEGER}
+    where owner_uid=#{imMsgContact.ownerUid,jdbcType=VARCHAR} and
+          other_uid=#{imMsgContact.otherUid,jdbcType=VARCHAR}
   </update>
   <select id="findMessageContactsByOwnerUid" resultType="geektime.im.lecture.entity.ImMsgContact">
     select *
@@ -26,7 +26,7 @@
   <select id="findMsgByOwnerIdAndOtherId" resultType="geektime.im.lecture.entity.ImMsgContact">
     select *
     from im_msg_contact
-    where owner_uid=#{ownerUid,jdbcType=INTEGER} and
-          other_uid=#{otherUid,jdbcType=INTEGER}
+    where owner_uid=#{ownerUid,jdbcType=VARCHAR} and
+          other_uid=#{otherUid,jdbcType=VARCHAR}
   </select>
 </mapper>

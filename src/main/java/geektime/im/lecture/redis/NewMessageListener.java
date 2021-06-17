@@ -31,7 +31,7 @@ public class NewMessageListener implements MessageListener {
         String jsonMsg = valueSerializer.deserialize(message.getBody());
         logger.info("Message Received --> pattern: {}，topic:{}，message: {}", new String(pattern), topic, jsonMsg);
         JSONObject msgJson = JSONObject.parseObject(jsonMsg);
-        long otherUid = msgJson.getLong("otherUid");
+        String otherUid = msgJson.getString("otherUid");
         JSONObject pushJson = new JSONObject();
         pushJson.put("type", 4);
         pushJson.put("data", msgJson);

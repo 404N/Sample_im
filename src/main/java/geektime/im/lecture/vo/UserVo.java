@@ -1,7 +1,7 @@
 package geektime.im.lecture.vo;
 
 public class UserVo {
-    private Integer uid;
+    private String uid;
 
     private String username;
 
@@ -9,11 +9,11 @@ public class UserVo {
 
     private String avatar;
 
-    public Integer getUid() {
+    public String getUid() {
         return uid;
     }
 
-    public void setUid(Integer uid) {
+    public void setUid(String uid) {
         this.uid = uid;
     }
 

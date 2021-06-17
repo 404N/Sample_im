@@ -16,7 +16,7 @@ public interface ImMsgRelationMapper extends CustomerMapper<ImMsgRelation> {
      * @param otherUid
      * @return
      */
-    List<ImMsgRelation> findAllByOwnerUidAndOtherUidOrderByMidAsc(Integer ownerUid, Integer otherUid);
+    List<ImMsgRelation> findAllByOwnerUidAndOtherUidOrderByMidAsc(String ownerUid, String otherUid);
 
 
     /**
@@ -26,5 +26,5 @@ public interface ImMsgRelationMapper extends CustomerMapper<ImMsgRelation> {
      * @param lastMid
      * @return
      */
-    List<ImMsgRelation> findAllByOwnerUidAndOtherUidSinceMid(Integer ownerUid, Integer otherUid, Integer lastMid);
+    List<ImMsgRelation> findAllByOwnerUidAndOtherUidSinceMid(String ownerUid, String otherUid, Integer lastMid);
 }

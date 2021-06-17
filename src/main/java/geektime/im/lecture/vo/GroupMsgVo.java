@@ -5,8 +5,8 @@ import java.util.Date;
 public class GroupMsgVo {
     private Integer mid;
     private String content;
-    private Integer ownerUid;
-    private Integer groupId;
+    private String ownerUid;
+    private String groupId;
     private Date createTime;
     private String avatar;
     private String ownerName;
@@ -27,19 +27,19 @@ public class GroupMsgVo {
         this.content = content;
     }
 
-    public Integer getOwnerUid() {
+    public String getOwnerUid() {
         return ownerUid;
     }
 
-    public void setOwnerUid(Integer ownerUid) {
+    public void setOwnerUid(String ownerUid) {
         this.ownerUid = ownerUid;
     }
 
-    public Integer getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 

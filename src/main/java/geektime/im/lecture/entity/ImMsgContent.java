@@ -11,10 +11,10 @@ public class ImMsgContent {
     private String content;
 
     @Column(name = "sender_id")
-    private Integer senderId;
+    private String senderId;
 
     @Column(name = "recipient_id")
-    private Integer recipientId;
+    private String recipientId;
 
     @Column(name = "msg_type")
     private Integer msgType;
@@ -53,28 +53,28 @@ public class ImMsgContent {
     /**
      * @return sender_id
      */
-    public Integer getSenderId() {
+    public String getSenderId() {
         return senderId;
     }
 
     /**
      * @param senderId
      */
-    public void setSenderId(Integer senderId) {
+    public void setSenderId(String senderId) {
         this.senderId = senderId;
     }
 
     /**
      * @return recipient_id
      */
-    public Integer getRecipientId() {
+    public String getRecipientId() {
         return recipientId;
     }
 
     /**
      * @param recipientId
      */
-    public void setRecipientId(Integer recipientId) {
+    public void setRecipientId(String recipientId) {
         this.recipientId = recipientId;
     }
 

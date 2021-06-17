@@ -12,7 +12,7 @@ public interface UserService {
 
     UserVo login(String email, String password);
 
-    List<ImUser> getAllUsersExcept(Integer exceptUid);
+    List<ImUser> getAllUsersExcept(String exceptUid);
 
     List<ImUser> getAllUsersExcept(ImUser exceptUser);
 
@@ -20,7 +20,7 @@ public interface UserService {
 
     ImUser getUserByEmail(String email);
 
-    ImUser getUserByUid(Integer uid);
+    ImUser getUserByUid(String uid);
 
     UserVo register(String email, String password, String name);
 }

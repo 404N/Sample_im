@@ -5,9 +5,9 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="group_id" jdbcType="INTEGER" property="groupId" />
+    <id column="group_id" jdbcType="VARCHAR" property="groupId" />
     <result column="group_name" jdbcType="VARCHAR" property="groupName" />
-    <result column="group_user_id" jdbcType="INTEGER" property="groupUserId" />
+    <result column="group_user_id" jdbcType="VARCHAR" property="groupUserId" />
     <result column="group_news_id" jdbcType="INTEGER" property="groupNewsId" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>

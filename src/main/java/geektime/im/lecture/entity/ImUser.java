@@ -5,7 +5,8 @@ import javax.persistence.*;
 @Table(name = "im_user")
 public class ImUser {
     @Id
-    private Integer uid;
+    @GeneratedValue(generator = "UUID")
+    private String uid;
 
     private String username;
 
@@ -18,14 +19,14 @@ public class ImUser {
     /**
      * @return uid
      */
-    public Integer getUid() {
+    public String getUid() {
         return uid;
     }
 
     /**
      * @param uid
      */
-    public void setUid(Integer uid) {
+    public void setUid(String uid) {
         this.uid = uid;
     }
 
@@ -83,16 +84,5 @@ public class ImUser {
      */
     public void setAvatar(String avatar) {
         this.avatar = avatar;
-    }
-
-    @Override
-    public String toString() {
-        return "ImUser{" +
-                "uid=" + uid +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", email='" + email + '\'' +
-                ", avatar='" + avatar + '\'' +
-                '}';
     }
 }

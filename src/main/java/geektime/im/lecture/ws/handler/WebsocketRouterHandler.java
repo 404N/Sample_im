@@ -35,8 +35,8 @@ import java.util.concurrent.atomic.AtomicLong;
 @ChannelHandler.Sharable
 @Component
 public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
-    private static final ConcurrentHashMap<Long, Channel> userChannel = new ConcurrentHashMap<>(15000);
-    private static final ConcurrentHashMap<Channel, Long> channelUser = new ConcurrentHashMap<>(15000);
+    private static final ConcurrentHashMap<String, Channel> userChannel = new ConcurrentHashMap<>(15000);
+    private static final ConcurrentHashMap<Channel, String> channelUser = new ConcurrentHashMap<>(15000);
     private ScheduledExecutorService executorService = new ScheduledThreadPoolExecutor(50, new EnhancedThreadFactory("ackCheckingThreadPool"));
     private static final Logger logger = LoggerFactory.getLogger(WebsocketRouterHandler.class);
     private static final AttributeKey<AtomicLong> TID_GENERATOR = AttributeKey.valueOf("tid_generator");
@@ -62,12 +62,12 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     break;
                 case 1:
                     //上线消息，返回相应数据
-                    long loginUid = data.getLong("uid");
+                    String loginUid = data.getString("uid");
                     userChannel.put(loginUid, ctx.channel());
                     channelUser.put(ctx.channel(), loginUid);
                     ctx.channel().attr(TID_GENERATOR).set(new AtomicLong(0));
                     ctx.channel().attr(NON_ACKED_MAP).set(new ConcurrentHashMap<Long, JSONObject>());
-                    LoginResVo loginResVo = messageService.queryLoginData((int) loginUid);
+                    LoginResVo loginResVo = messageService.queryLoginData(loginUid);
                     logger.info("[user bind]: uid = {} , channel = {}", loginUid, ctx.channel());
                     JSONObject loginJson = new JSONObject();
                     loginJson.put("type", 1);
@@ -78,8 +78,8 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     break;
                 case 2:
                     //查询消息
-                    Integer ownerUid = data.getInteger("ownerUid");
-                    Integer otherUid = data.getInteger("otherUid");
+                    String ownerUid = data.getString("ownerUid");
+                    String otherUid = data.getString("otherUid");
                     List<MessageVO> messageVO = messageService.queryConversationMsg(ownerUid, otherUid);
                     String msgs = "";
                     if (messageVO != null) {
@@ -93,8 +93,8 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case 3:
                     //发消息
-                    Integer senderUid = data.getInteger("senderUid");
-                    Integer recipientUid = data.getInteger("recipientUid");
+                    String senderUid = data.getString("senderUid");
+                    String recipientUid = data.getString("recipientUid");
                     String content = data.getString("content");
                     int msgType = data.getIntValue("msgType");
                     MessageVO messageContent = messageService.sendNewMsg(senderUid, recipientUid, content, msgType);
@@ -108,7 +108,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
 
                 case 5:
                     //查总未读
-                    Integer unreadOwnerUid = data.getInteger("uid");
+                    String unreadOwnerUid = data.getString("uid");
                     long totalUnread = messageService.queryTotalUnread(unreadOwnerUid);
                     ctx.writeAndFlush(new TextWebSocketFrame("{\"type\":5,\"data\":{\"unread\":" + totalUnread + "}}"));
                     break;
@@ -123,10 +123,10 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                 case 100:
                     //群聊消息查询
                     //获取群id和消息id
-                    Integer groupId = data.getInteger("groupId");
+                    String groupId = data.getString("groupId");
                     //type 0表示获取最新的50条，1表示获取自mid开始之后的消息
                     Integer getType = data.getInteger("type");
-                    if (type == 0) {
+                    if (getType == 0) {
                         //群消息记录页数
                         Integer page = data.getInteger("page");
                         //分页起始码以及每页页数
@@ -152,8 +152,8 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                 case 101:
                     //群聊消息发送
                     //获取群id
-                    Integer gId = data.getInteger("groupId");
-                    Integer sId = data.getInteger("senderUid");
+                    String gId = data.getString("groupId");
+                    String sId = data.getString("senderUid");
                     String groupContent = data.getString("content");
                     GroupMsgVo groupMsgVo = messageService.sendGroupMessage(sId, gId, groupContent);
                     if (groupMsgVo != null) {
@@ -186,7 +186,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
         ctx.channel().close();
     }
 
-    public void pushMsg(long recipientUid, JSONObject message) {
+    public void pushMsg(String recipientUid, JSONObject message) {
         Channel channel = userChannel.get(recipientUid);
         if (channel != null && channel.isActive() && channel.isWritable()) {
             AtomicLong generator = channel.attr(TID_GENERATOR).get();
@@ -205,11 +205,11 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
         }
     }
 
-    public void pushGroupMsg(Integer groupId, Integer sendUid, JSONObject message) {
+    public void pushGroupMsg(String groupId, String sendUid, JSONObject message) {
         List<ImUser> imUserList = messageService.queryUsersByGroupId(groupId);
         imUserList.forEach(user -> {
             if (!user.getUid().equals(sendUid)) {
-                Channel channel = userChannel.get(user.getUid().longValue());
+                Channel channel = userChannel.get(user.getUid());
                 if (channel != null && channel.isActive() && channel.isWritable()) {
                     AtomicLong generator = channel.attr(TID_GENERATOR).get();
                     long tid = generator.incrementAndGet();
@@ -235,7 +235,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
      * @param channel
      */
     public void cleanUserChannel(Channel channel) {
-        long uid = channelUser.remove(channel);
+        String uid = channelUser.remove(channel);
         userChannel.remove(uid);
         logger.info("[cleanChannel]:remove uid & channel info from gateway, uid is {}, channel is {}", uid, channel);
     }

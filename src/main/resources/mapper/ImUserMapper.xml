@@ -5,7 +5,7 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="uid" jdbcType="INTEGER" property="uid" />
+    <id column="uid" jdbcType="VARCHAR" property="uid" />
     <result column="username" jdbcType="VARCHAR" property="username" />
     <result column="password" jdbcType="VARCHAR" property="password" />
     <result column="email" jdbcType="VARCHAR" property="email" />
@@ -20,11 +20,11 @@
   <select id="findUsersByUidIsNot" resultType="geektime.im.lecture.entity.ImUser">
     select *
     from im_user
-    where uid!=#{uid,jdbcType=INTEGER}
+    where uid!=#{uid,jdbcType=VARCHAR}
   </select>
   <select id="findByUid" resultType="geektime.im.lecture.entity.ImUser">
     select *
     from im_user
-    where uid=#{uid,jdbcType=INTEGER}
+    where uid=#{uid,jdbcType=VARCHAR}
   </select>
 </mapper>

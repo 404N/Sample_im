@@ -9,10 +9,10 @@ public class ImGroupMsg {
     private Integer mid;
 
     @Column(name = "group_id")
-    private Integer groupId;
+    private String groupId;
 
     @Column(name = "send_id")
-    private Integer sendId;
+    private String sendId;
 
     @Column(name = "send_name")
     private String sendName;
@@ -42,28 +42,28 @@ public class ImGroupMsg {
     /**
      * @return group_id
      */
-    public Integer getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
     /**
      * @param groupId
      */
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
     /**
      * @return send_id
      */
-    public Integer getSendId() {
+    public String getSendId() {
         return sendId;
     }
 
     /**
      * @param sendId
      */
-    public void setSendId(Integer sendId) {
+    public void setSendId(String sendId) {
         this.sendId = sendId;
     }
 

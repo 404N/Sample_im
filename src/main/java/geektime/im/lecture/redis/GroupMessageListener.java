@@ -30,8 +30,8 @@ public class GroupMessageListener implements MessageListener {
         String jsonMsg = valueSerializer.deserialize(message.getBody());
         logger.info("Message Received --> pattern: {}，topic:{}，message: {}", new String(pattern), topic, jsonMsg);
         JSONObject msgJson = JSONObject.parseObject(jsonMsg);
-        Integer groupId = msgJson.getInteger("groupId");
-        Integer sendId = msgJson.getInteger("senderUid");
+        String groupId = msgJson.getString("groupId");
+        String sendId = msgJson.getString("senderUid");
         JSONObject pushJson = new JSONObject();
         pushJson.put("type", 101);
         pushJson.put("data", msgJson);

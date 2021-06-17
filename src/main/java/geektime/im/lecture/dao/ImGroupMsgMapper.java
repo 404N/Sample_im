@@ -2,8 +2,10 @@ package geektime.im.lecture.dao;
 
 import geektime.im.lecture.core.CustomerMapper;
 import geektime.im.lecture.entity.ImGroupMsg;
+import geektime.im.lecture.entity.ImMsgContent;
 import geektime.im.lecture.entity.ImUser;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -15,7 +17,7 @@ public interface ImGroupMsgMapper extends CustomerMapper<ImGroupMsg> {
      * @param groupId
      * @return
      */
-    List<ImGroupMsg> queryMsgByGroupId(Integer groupId);
+    List<ImGroupMsg> queryMsgByGroupId(String groupId);
 
     /**
      * 查找mid大于目标值的所有群消息
@@ -23,6 +25,13 @@ public interface ImGroupMsgMapper extends CustomerMapper<ImGroupMsg> {
      * @param mid
      * @return
      */
-    List<ImGroupMsg> queryGroupMsgByMid(Integer groupId, Integer mid);
+    List<ImGroupMsg> queryGroupMsgByMid(String groupId, Integer mid);
+
+    /**
+     * 插入一条群聊消息，并返回mid
+     * @param content
+     * @return
+     */
+    Integer insertGetMid(@Param("content") ImGroupMsg content);
 
 }

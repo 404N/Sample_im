@@ -6,10 +6,10 @@ import javax.persistence.*;
 @Table(name = "im_msg_contact")
 public class ImMsgContact {
     @Column(name = "owner_uid")
-    private Integer ownerUid;
+    private String ownerUid;
 
     @Column(name = "other_uid")
-    private Integer otherUid;
+    private String otherUid;
 
     private Integer mid;
 
@@ -21,28 +21,28 @@ public class ImMsgContact {
     /**
      * @return owner_uid
      */
-    public Integer getOwnerUid() {
+    public String getOwnerUid() {
         return ownerUid;
     }
 
     /**
      * @param ownerUid
      */
-    public void setOwnerUid(Integer ownerUid) {
+    public void setOwnerUid(String ownerUid) {
         this.ownerUid = ownerUid;
     }
 
     /**
      * @return other_uid
      */
-    public Integer getOtherUid() {
+    public String getOtherUid() {
         return otherUid;
     }
 
     /**
      * @param otherUid
      */
-    public void setOtherUid(Integer otherUid) {
+    public void setOtherUid(String otherUid) {
         this.otherUid = otherUid;
     }
 

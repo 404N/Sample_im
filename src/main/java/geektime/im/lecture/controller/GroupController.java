@@ -19,7 +19,7 @@ public class GroupController {
     private GroupService groupService;
 
     @PostMapping(path = "/createGroup")
-    public ResultBody createGroup(@RequestParam Integer ownerUid, @RequestParam String groupName) {
+    public ResultBody createGroup(@RequestParam String ownerUid, @RequestParam String groupName) {
         groupService.createGroup(ownerUid,groupName);
         return ResultUtil.success();
     }

@@ -7,13 +7,14 @@ import javax.persistence.*;
 public class ImGroupInfo {
     @Id
     @Column(name = "group_id")
-    private Integer groupId;
+    @GeneratedValue(generator = "UUID")
+    private String groupId;
 
     @Column(name = "group_name")
     private String groupName;
 
     @Column(name = "group_user_id")
-    private Integer groupUserId;
+    private String groupUserId;
 
     @Column(name = "group_news_id")
     private Integer groupNewsId;
@@ -24,14 +25,14 @@ public class ImGroupInfo {
     /**
      * @return group_id
      */
-    public Integer getGroupId() {
+    public String getGroupId() {
         return groupId;
     }
 
     /**
      * @param groupId
      */
-    public void setGroupId(Integer groupId) {
+    public void setGroupId(String groupId) {
         this.groupId = groupId;
     }
 
@@ -52,14 +53,14 @@ public class ImGroupInfo {
     /**
      * @return group_user_id
      */
-    public Integer getGroupUserId() {
+    public String getGroupUserId() {
         return groupUserId;
     }
 
     /**
      * @param groupUserId
      */
-    public void setGroupUserId(Integer groupUserId) {
+    public void setGroupUserId(String groupUserId) {
         this.groupUserId = groupUserId;
     }
 

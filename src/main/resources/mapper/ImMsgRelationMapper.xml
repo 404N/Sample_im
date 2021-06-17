@@ -5,24 +5,24 @@
     <!--
       WARNING - @mbg.generated
     -->
-    <id column="owner_uid" jdbcType="INTEGER" property="ownerUid" />
+    <id column="owner_uid" jdbcType="VARCHAR" property="ownerUid" />
     <id column="mid" jdbcType="INTEGER" property="mid" />
-    <result column="other_uid" jdbcType="INTEGER" property="otherUid" />
+    <result column="other_uid" jdbcType="VARCHAR" property="otherUid" />
     <result column="type" jdbcType="INTEGER" property="type" />
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <select id="findAllByOwnerUidAndOtherUidOrderByMidAsc" resultType="geektime.im.lecture.entity.ImMsgRelation">
     select *
     from im_msg_relation
-    where owner_uid=#{ownerUid,jdbcType=INTEGER} and
-          other_uid=#{otherUid,jdbcType=INTEGER}
+    where owner_uid=#{ownerUid,jdbcType=VARCHAR} and
+          other_uid=#{otherUid,jdbcType=VARCHAR}
     order by mid
   </select>
   <select id="findAllByOwnerUidAndOtherUidSinceMid" resultType="geektime.im.lecture.entity.ImMsgRelation">
     select *
     from im_msg_relation
-    where owner_uid=#{ownerUid,jdbcType=INTEGER} and
-          other_uid=#{otherUid,jdbcType=INTEGER} and
+    where owner_uid=#{ownerUid,jdbcType=VARCHAR} and
+          other_uid=#{otherUid,jdbcType=VARCHAR} and
           <![CDATA[ mid>#{lastMid,jdbcType=INTEGER} ]]>
     order by mid
   </select>
