@@ -82,7 +82,7 @@ public interface MessageService {
      * @param groupId
      * @return
      */
-    List<ImUser> queryUsersByGroupId(String groupId);
+    List<String> queryUsersByGroupId(String groupId);
 
     /**
      * 发送群聊消息

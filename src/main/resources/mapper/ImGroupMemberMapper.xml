@@ -10,8 +10,8 @@
     <result column="user_id" jdbcType="VARCHAR" property="userId" />
     <result column="join_time" jdbcType="TIMESTAMP" property="joinTime" />
   </resultMap>
-  <select id="queryUsersByGroupId" resultType="geektime.im.lecture.entity.ImUser">
-    select *
+  <select id="queryUsersByGroupId" resultType="java.lang.String">
+    select user_id
     from im_group_member
     where group_id=#{groupId,jdbcType=VARCHAR}
   </select>

@@ -14,5 +14,5 @@ public interface ImGroupMemberMapper extends CustomerMapper<ImGroupMember> {
      * @param groupId
      * @return
      */
-    List<ImUser> queryUsersByGroupId(String groupId);
+    List<String> queryUsersByGroupId(String groupId);
 }

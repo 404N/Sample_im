@@ -82,7 +82,7 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public List<ImUser> queryUsersByGroupId(String groupId) {
+    public List<String> queryUsersByGroupId(String groupId) {
         return groupMemberMapper.queryUsersByGroupId(groupId);
     }
 

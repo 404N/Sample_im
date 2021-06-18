@@ -135,7 +135,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                         PageInfo pageInfo = new PageInfo(messageVOList);
                         JSONObject jsonObject = new JSONObject();
                         jsonObject.put("type", 100);
-                        jsonObject.put("data", JSONObject.toJSON(pageInfo));
+                        jsonObject.put("data", JSONObject.toJSON(pageInfo.getList()));
                         jsonObject.put("page", page);
                         ctx.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(jsonObject)));
                     } else {
@@ -148,6 +148,7 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                         jsonObject.put("page", 0);
                         ctx.writeAndFlush(new TextWebSocketFrame(JSONObject.toJSONString(jsonObject)));
                     }
+                    break;
 
                 case 101:
                     //群聊消息发送
@@ -206,10 +207,10 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
     }
 
     public void pushGroupMsg(String groupId, String sendUid, JSONObject message) {
-        List<ImUser> imUserList = messageService.queryUsersByGroupId(groupId);
+        List<String> imUserList = messageService.queryUsersByGroupId(groupId);
         imUserList.forEach(user -> {
-            if (!user.getUid().equals(sendUid)) {
-                Channel channel = userChannel.get(user.getUid());
+            if (!user.equals(sendUid)) {
+                Channel channel = userChannel.get(user);
                 if (channel != null && channel.isActive() && channel.isWritable()) {
                     AtomicLong generator = channel.attr(TID_GENERATOR).get();
                     long tid = generator.incrementAndGet();

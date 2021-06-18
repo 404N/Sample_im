@@ -22,7 +22,7 @@
         select *
         from im_group_msg
         where group_id = #{groupId,jdbcType=VARCHAR}
-          and <![CDATA[ mid > #{lastMid,jdbcType=INTEGER}
+          and <![CDATA[ mid > #{mid,jdbcType=INTEGER}
         ]]>
     </select>
     <select id="queryMsgByMid" resultType="geektime.im.lecture.entity.ImGroupMsg">
@@ -32,7 +32,7 @@
     </select>
     <insert id="insertGetMid" keyColumn="mid" keyProperty="mid" useGeneratedKeys="true">
         INSERT INTO im_group_msg(group_id, send_id, send_name, send_avatar, content, send_time)
-        VALUES (#{content.groupId}, #{content.senderId}, #{content.sendName}, #{content.sendAvatar},
+        VALUES (#{content.groupId}, #{content.sendId}, #{content.sendName}, #{content.sendAvatar},
                 #{content.content}, #{content.sendTime});
     </insert>
 </mapper>

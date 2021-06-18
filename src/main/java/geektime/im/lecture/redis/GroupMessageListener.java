@@ -31,9 +31,9 @@ public class GroupMessageListener implements MessageListener {
         logger.info("Message Received --> pattern: {}，topic:{}，message: {}", new String(pattern), topic, jsonMsg);
         JSONObject msgJson = JSONObject.parseObject(jsonMsg);
         String groupId = msgJson.getString("groupId");
-        String sendId = msgJson.getString("senderUid");
+        String sendId = msgJson.getString("ownerUid");
         JSONObject pushJson = new JSONObject();
-        pushJson.put("type", 101);
+        pushJson.put("type", 102);
         pushJson.put("data", msgJson);
         websocketRouterHandler.pushGroupMsg(groupId, sendId, pushJson);
     }

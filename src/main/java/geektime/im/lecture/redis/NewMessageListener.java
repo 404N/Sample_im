@@ -36,6 +36,5 @@ public class NewMessageListener implements MessageListener {
         pushJson.put("type", 4);
         pushJson.put("data", msgJson);
         websocketRouterHandler.pushMsg(otherUid, pushJson);
-
     }
 }

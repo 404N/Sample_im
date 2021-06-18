@@ -171,7 +171,7 @@ public class MessageServiceImpl implements MessageService {
             MessageContactVO contactVO = new MessageContactVO(ownerUser.getUid(), ownerUser.getUsername(), ownerUser.getAvatar(), totalUnread);
             contacts.forEach(contact -> {
                 Integer mid = contact.getMid();
-                if (contact.getType() > 1) {
+                if (contact.getType() < 2) {
                     ImMsgContent contentVO = contentRepository.findByMid(mid);
                     ImUser otherUser = userRepository.findByUid(contact.getOtherUid());
                     if (null != contentVO) {
@@ -237,19 +237,19 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public List<ImUser> queryUsersByGroupId(String groupId) {
+    public List<String> queryUsersByGroupId(String groupId) {
         //先取redis
-        List<ImUser> imUserList;
+        List<String> imUserList;
         Object list = redisTemplate.opsForValue().get(groupId + Constants.GROUP_MESSAGE_SUFFIX);
         if (null != list) {
-            imUserList = JSONObject.parseArray(list.toString(), ImUser.class);
-            ;
+            imUserList = JSONObject.parseArray(list.toString(), String.class);
         } else {
             imUserList = groupService.queryUsersByGroupId(groupId);
             String json = JSONObject.toJSONString(imUserList);
             //存redis，设置期限为1天
-            redisTemplate.opsForValue().set(groupId.toString() + Constants.GROUP_MESSAGE_SUFFIX, json, Duration.ofDays(1));
+            redisTemplate.opsForValue().set(groupId + Constants.GROUP_MESSAGE_SUFFIX, json, Duration.ofDays(1));
         }
+
         return imUserList;
     }
 

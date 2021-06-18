@@ -44,7 +44,7 @@ public interface GroupService {
      * @param groupId
      * @return
      */
-    List<ImUser> queryUsersByGroupId(String groupId);
+    List<String> queryUsersByGroupId(String groupId);
 
     /**
      * 通过群id查找群信息
