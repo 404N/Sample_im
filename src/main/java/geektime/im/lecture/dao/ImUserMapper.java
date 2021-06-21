@@ -2,6 +2,7 @@ package geektime.im.lecture.dao;
 
 import geektime.im.lecture.core.CustomerMapper;
 import geektime.im.lecture.entity.ImUser;
+import geektime.im.lecture.vo.UserVo;
 import org.apache.ibatis.annotations.Mapper;
 import org.springframework.stereotype.Repository;
 
@@ -30,4 +31,11 @@ public interface ImUserMapper extends CustomerMapper<ImUser> {
      * @return
      */
     ImUser findByUid(String uid);
+
+    /**
+     * 根据用户吗模糊查找用户
+     * @param userName
+     * @return
+     */
+    List<ImUser> queryUser(String userName);
 }

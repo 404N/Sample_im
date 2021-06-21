@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -101,5 +102,25 @@ public class UserServiceImpl implements UserService {
         userVo.setUsername(name);
         userVo.setAvatar(user.getAvatar());
         return userVo;
+    }
+
+    @Override
+    public List<UserVo> queryUser(String userName) {
+        List<UserVo> userVoList = new ArrayList<>();
+        List<ImUser> users = userRepository.queryUser(userName);
+        users.forEach(user -> {
+            UserVo userVo = new UserVo();
+            userVo.setUid(user.getUid());
+            userVo.setUsername(user.getUsername());
+            userVo.setEmail(user.getEmail());
+            userVo.setAvatar(user.getAvatar());
+            userVoList.add(userVo);
+        });
+        return userVoList;
+    }
+
+    @Override
+    public void addFriend(String ownerUid, String otherUid) {
+
     }
 }

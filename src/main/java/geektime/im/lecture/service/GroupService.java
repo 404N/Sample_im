@@ -52,4 +52,11 @@ public interface GroupService {
      * @return
      */
     ImGroupInfo queryGroupByGroupId(String groupId);
+
+    /**
+     * 加入群聊请求
+     * @param groupId
+     * @param uid
+     */
+    void enterGroup(String groupId, String uid);
 }

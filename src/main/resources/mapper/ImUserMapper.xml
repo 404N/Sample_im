@@ -27,4 +27,9 @@
     from im_user
     where uid=#{uid,jdbcType=VARCHAR}
   </select>
+  <select id="queryUser" resultType="geektime.im.lecture.entity.ImUser">
+    select *
+    from im_user
+    where username like CONCAT('%',#{userName,jdbcType=VARCHAR},'%')
+  </select>
 </mapper>

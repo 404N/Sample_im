@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import java.util.List;
 
-@Controller
+@RestController
 public class UserController {
 
     @Autowired
@@ -28,17 +28,27 @@ public class UserController {
 
 
     @RequestMapping(path = "/api/login",method = RequestMethod.POST)
-    @ResponseBody
     public ResultBody loginJson(@RequestParam String email, @RequestParam String password) {
         UserVo loginUser = userService.login(email, password);
         return ResultUtil.success(loginUser);
     }
 
     @RequestMapping(path = "/api/register",method = RequestMethod.POST)
-    @ResponseBody
     public ResultBody register(@RequestParam String email,@RequestParam String name, @RequestParam String password) {
         UserVo loginUser = userService.register(email, password,name);
         return ResultUtil.success(loginUser);
+    }
+
+    @PostMapping(path = "/api/queryUser")
+    public ResultBody queryUser(@RequestParam String userName) {
+        List<UserVo> userVoList = userService.queryUser(userName);
+        return ResultUtil.success(userVoList);
+    }
+
+    @PostMapping(path = "/api/addFriend")
+    public ResultBody addFriend(@RequestParam String ownerUid,@RequestParam String otherUid) {
+        userService.addFriend(ownerUid,otherUid);
+        return ResultUtil.success();
     }
 
 }

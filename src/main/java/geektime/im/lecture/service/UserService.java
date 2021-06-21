@@ -21,4 +21,18 @@ public interface UserService {
     ImUser getUserByUid(String uid);
 
     UserVo register(String email, String password, String name);
+
+    /**
+     * 根据用户名模糊查找用户
+     * @param userName
+     * @return
+     */
+    List<UserVo> queryUser(String userName);
+
+    /**
+     * 添加好友接口
+     * @param ownerUid
+     * @param otherUid
+     */
+    void addFriend(String ownerUid, String otherUid);
 }

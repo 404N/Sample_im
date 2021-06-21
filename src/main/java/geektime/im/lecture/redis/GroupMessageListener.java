@@ -37,4 +37,5 @@ public class GroupMessageListener implements MessageListener {
         pushJson.put("data", msgJson);
         websocketRouterHandler.pushGroupMsg(groupId, sendId, pushJson);
     }
+
 }

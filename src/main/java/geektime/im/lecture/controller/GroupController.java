@@ -29,5 +29,11 @@ public class GroupController {
         List<GroupVo> groupVoList=groupService.queryGroup(groupName);
         return ResultUtil.success(groupVoList);
     }
+
+    @PostMapping(path = "enterGroup")
+    public ResultBody enterGroup(@RequestParam String groupId,@RequestParam String uid) {
+        groupService.enterGroup(groupId,uid);
+        return ResultUtil.success();
+    }
     
 }
