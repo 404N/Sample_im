@@ -11,6 +11,8 @@ public enum CommonEnum implements BaseError {
     SERVER_BUSY("504","服务器正忙，请稍后再试!"),
     ACCOUNT_WRONG("1001","账号或密码错误!"),
     ACCOUNT_EXIST("1002","该邮箱已被注册!"),
+    ACCOUNT_NOT_EXIST("1003","账号不存在!"),
+    ADD_FRIEND_EXIST("1004","已发送过请求!"),
     NO_LOGIN("1003","账号登陆过期，重新登录!")
     ;
 

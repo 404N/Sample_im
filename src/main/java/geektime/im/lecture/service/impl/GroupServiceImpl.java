@@ -90,4 +90,9 @@ public class GroupServiceImpl implements GroupService {
     public ImGroupInfo queryGroupByGroupId(String groupId) {
         return groupInfoRepository.queryGroupByGroupId(groupId);
     }
+
+    @Override
+    public void enterGroup(String groupId, String uid) {
+
+    }
 }

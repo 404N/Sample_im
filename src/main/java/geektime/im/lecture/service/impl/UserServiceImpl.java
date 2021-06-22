@@ -1,17 +1,15 @@
 package geektime.im.lecture.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import geektime.im.lecture.Constants;
 import geektime.im.lecture.dao.*;
-import geektime.im.lecture.entity.ImGroupMsg;
-import geektime.im.lecture.entity.ImMsgContact;
-import geektime.im.lecture.entity.ImMsgContent;
-import geektime.im.lecture.entity.ImUser;
+import geektime.im.lecture.entity.*;
 import geektime.im.lecture.exceptions.BaseException;
 import geektime.im.lecture.response.CommonEnum;
 import geektime.im.lecture.service.UserService;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.UserVo;
-import org.checkerframework.checker.units.qual.A;
+import geektime.im.lecture.ws.handler.WebsocketRouterHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -40,6 +39,12 @@ public class UserServiceImpl implements UserService {
 
     @Autowired
     private ImGroupMsgMapper groupMsgMapper;
+
+    @Autowired
+    private WebsocketRouterHandler websocketRouterHandler;
+
+    @Autowired
+    private AddFriendRequestMapper addFriendRequestMapper;
 
     @Override
     public UserVo login(String email, String password) {
@@ -121,6 +126,30 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void addFriend(String ownerUid, String otherUid) {
+        AddFriendRequest request=addFriendRequestMapper.findById(ownerUid,otherUid);
+        //若已发送过请求，则返回已发送过
+        if(null!=request){
+            throw new BaseException(CommonEnum.ADD_FRIEND_EXIST);
+        }
+        Date currentTime = new Date();
+        AddFriendRequest addFriendRequest=new AddFriendRequest();
+        ImUser imUser=userRepository.findByUid(ownerUid);
+        if(null==imUser){
+            throw new BaseException(CommonEnum.ACCOUNT_NOT_EXIST);
+        }
+        addFriendRequest.setOwnerId(ownerUid);
+        addFriendRequest.setOwnerAvatar(imUser.getAvatar());
+        addFriendRequest.setSendTime(currentTime);
+        addFriendRequest.setOtherId(otherUid);
+        addFriendRequest.setStatus(0);
+        addFriendRequestMapper.insert(addFriendRequest);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", 10);
+        jsonObject.put("data", JSONObject.toJSON(addFriendRequest));
+        websocketRouterHandler.pushAddFriendMsg(ownerUid,otherUid,jsonObject);
+    }
 
+    @Override
+    public void addFriendMsg(String ownerUid, String otherUid) {
     }
 }

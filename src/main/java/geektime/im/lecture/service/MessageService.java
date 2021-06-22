@@ -92,4 +92,11 @@ public interface MessageService {
      * @return
      */
     GroupMsgVo sendGroupMessage(String sId, String gId, String groupContent);
+
+    /**
+     * 删除发送的好友请求消息
+     * @param sendUid
+     * @param recipientUid
+     */
+    void deleteFriendRequest(String sendUid, String recipientUid);
 }

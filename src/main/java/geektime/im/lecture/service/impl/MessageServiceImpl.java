@@ -41,6 +41,8 @@ public class MessageServiceImpl implements MessageService {
     private GroupService groupService;
     @Autowired
     private ImGroupMsgMapper groupMsgMapper;
+    @Autowired
+    private AddFriendRequestMapper addFriendRequestMapper;
 
     @Override
     @Transactional
@@ -249,12 +251,11 @@ public class MessageServiceImpl implements MessageService {
             //存redis，设置期限为1天
             redisTemplate.opsForValue().set(groupId + Constants.GROUP_MESSAGE_SUFFIX, json, Duration.ofDays(1));
         }
-
         return imUserList;
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor=Exception.class)
     public GroupMsgVo sendGroupMessage(String sId, String gId, String groupContent) {
         Date currentTime = new Date();
         GroupMsgVo groupMsgVo = new GroupMsgVo();
@@ -293,5 +294,10 @@ public class MessageServiceImpl implements MessageService {
         }
         redisTemplate.convertAndSend(Constants.WEBSOCKET_GROUP_MSG_TOPIC, JSONObject.toJSONString(groupMsgVo));
         return groupMsgVo;
+    }
+
+    @Override
+    public void deleteFriendRequest(String sendUid, String recipientUid) {
+        addFriendRequestMapper.updateFriendRequest(sendUid,recipientUid);
     }
 }

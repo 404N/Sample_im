@@ -51,4 +51,9 @@ public class UserController {
         return ResultUtil.success();
     }
 
+    @PostMapping(path = "/api/addFriendMsg")
+    public ResultBody addFriendMsg(@RequestParam String ownerUid,@RequestParam String otherUid) {
+        userService.addFriendMsg(ownerUid,otherUid);
+        return ResultUtil.success();
+    }
 }

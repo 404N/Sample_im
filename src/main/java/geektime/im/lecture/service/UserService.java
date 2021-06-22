@@ -35,4 +35,11 @@ public interface UserService {
      * @param otherUid
      */
     void addFriend(String ownerUid, String otherUid);
+
+    /**
+     * 同意添加好友接口
+     * @param ownerUid
+     * @param otherUid
+     */
+    void addFriendMsg(String ownerUid, String otherUid);
 }

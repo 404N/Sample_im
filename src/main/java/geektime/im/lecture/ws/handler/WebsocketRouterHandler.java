@@ -206,6 +206,27 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
         }
     }
 
+    public void pushAddFriendMsg(String sendUid, String recipientUid, JSONObject message) {
+        Channel channel = userChannel.get(recipientUid);
+        if (channel != null && channel.isActive() && channel.isWritable()) {
+            AtomicLong generator = channel.attr(TID_GENERATOR).get();
+            long tid = generator.incrementAndGet();
+            message.put("tid", tid);
+            channel.writeAndFlush(new TextWebSocketFrame(message.toJSONString())).addListener(future -> {
+                if (future.isCancelled()) {
+                    logger.warn("future has been cancelled. {}, channel: {}", message, channel);
+                } else if (future.isSuccess()) {
+                    addMsgToAckBuffer(channel, message);
+                    //发送成功，设置消息为已读
+                    messageService.deleteFriendRequest(sendUid, recipientUid);
+                    logger.warn("future has been successfully pushed. {}, channel: {}", message, channel);
+                } else {
+                    logger.error("message write fail, {}, channel: {}", message, channel, future.cause());
+                }
+            });
+        }
+    }
+
     public void pushGroupMsg(String groupId, String sendUid, JSONObject message) {
         List<String> imUserList = messageService.queryUsersByGroupId(groupId);
         imUserList.forEach(user -> {

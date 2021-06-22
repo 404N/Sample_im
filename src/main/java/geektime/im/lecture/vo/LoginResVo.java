@@ -1,6 +1,7 @@
 package geektime.im.lecture.vo;
 
 
+import geektime.im.lecture.entity.AddFriendRequest;
 import geektime.im.lecture.entity.ImUser;
 
 import java.util.List;
@@ -9,6 +10,7 @@ public class LoginResVo {
     private ImUser loginUser;
     private List<ImUser> otherUsers;
     private MessageContactVO contactVO;
+    private List<AddFriendRequest> addFriendRequestList;
 
     public ImUser getLoginUser() {
         return loginUser;
@@ -32,6 +34,14 @@ public class LoginResVo {
 
     public void setContactVO(MessageContactVO contactVO) {
         this.contactVO = contactVO;
+    }
+
+    public List<AddFriendRequest> getAddFriendRequestList() {
+        return addFriendRequestList;
+    }
+
+    public void setAddFriendRequestList(List<AddFriendRequest> addFriendRequestList) {
+        this.addFriendRequestList = addFriendRequestList;
     }
 
     @Override
