@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="geektime.im.lecture.dao.FriendsListMapper" >
+  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.FriendsList" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <result column="owner_id" property="ownerId" jdbcType="VARCHAR" />
+    <result column="friend_id" property="friendId" jdbcType="VARCHAR" />
+    <result column="create_time" property="createTime" jdbcType="DATE" />
+  </resultMap>
+  <select id="selectByOwnerIdAndFriendId" resultType="geektime.im.lecture.entity.FriendsList">
+    select *
+    from friends_list
+    where owner_id=#{ownerUid,jdbcType=VARCHAR} and
+          friend_id=#{ownerUid,jdbcType=VARCHAR}
+  </select>
+</mapper>

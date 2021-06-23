@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -46,6 +47,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private AddFriendRequestMapper addFriendRequestMapper;
 
+    @Autowired
+    private FriendsListMapper friendsListMapper;
+
     @Override
     public UserVo login(String email, String password) {
         ImUser user = userRepository.findByEmail(email);
@@ -67,7 +71,6 @@ public class UserServiceImpl implements UserService {
         return userVo;
     }
 
-
     @Override
     public List<ImUser> getAllUsersExcept(String exceptUid) {
         List<ImUser> otherUsers = userRepository.findUsersByUidIsNot(exceptUid);
@@ -79,7 +82,6 @@ public class UserServiceImpl implements UserService {
         List<ImUser> otherUsers = userRepository.findUsersByUidIsNot(exceptUser.getUid());
         return otherUsers;
     }
-
 
     @Override
     public ImUser getUserByEmail(String email) {
@@ -139,6 +141,7 @@ public class UserServiceImpl implements UserService {
         }
         addFriendRequest.setOwnerId(ownerUid);
         addFriendRequest.setOwnerAvatar(imUser.getAvatar());
+        addFriendRequest.setOwnerName(imUser.getUsername());
         addFriendRequest.setSendTime(currentTime);
         addFriendRequest.setOtherId(otherUid);
         addFriendRequest.setStatus(0);
@@ -150,6 +153,34 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void addFriendMsg(String ownerUid, String otherUid) {
+    public void addFriendMsg(String ownerUid, String otherUid,Integer status) {
+        if(null!=friendsListMapper.selectByOwnerIdAndFriendId(ownerUid,otherUid)){
+            throw new BaseException(CommonEnum.FRIEND_EXIST);
+        }
+        Date currentTime = new Date();
+        FriendsList friendsList=new FriendsList();
+        friendsList.setOwnerId(ownerUid);
+        friendsList.setFriendId(otherUid);
+        friendsList.setCreateTime(currentTime);
+        FriendsList friendsList2=new FriendsList();
+        friendsList.setOwnerId(otherUid);
+        friendsList.setFriendId(ownerUid);
+        friendsList.setCreateTime(currentTime);
+        //双向插入，便于查询
+        friendsListMapper.insert(friendsList);
+        friendsListMapper.insert(friendsList2);
+    }
+
+    @Override
+    public List<AddFriendRequest> queryFriendRequests(String uid) {
+        //根据uid查询所有好友请求
+        List<AddFriendRequest> requestList=addFriendRequestMapper.selectByUid(uid);
+        return requestList;
+    }
+
+    @Override
+    public void updateFriendRequests(String uid) {
+        //根据uid查询所有好友请求
+        addFriendRequestMapper.updateByUid(uid);
     }
 }

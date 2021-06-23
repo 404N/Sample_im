@@ -8,10 +8,7 @@ import geektime.im.lecture.entity.*;
 import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.service.MessageService;
 import geektime.im.lecture.service.UserService;
-import geektime.im.lecture.vo.GroupMsgVo;
-import geektime.im.lecture.vo.LoginResVo;
-import geektime.im.lecture.vo.MessageContactVO;
-import geektime.im.lecture.vo.MessageVO;
+import geektime.im.lecture.vo.*;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -19,6 +16,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -220,11 +218,27 @@ public class MessageServiceImpl implements MessageService {
     public LoginResVo queryLoginData(String uid) {
         LoginResVo loginResVo = new LoginResVo();
         ImUser loginUser = userService.getUserByUid(uid);
-        loginResVo.setLoginUser(loginUser);
+        UserVo userVo=new UserVo();
+        userVo.setUid(loginUser.getUid());
+        userVo.setUsername(loginUser.getUsername());
+        userVo.setEmail(loginUser.getEmail());
+        userVo.setAvatar(loginUser.getAvatar());
+        loginResVo.setLoginUser(userVo);
         List<ImUser> otherUsers = userService.getAllUsersExcept(loginUser);
-        loginResVo.setOtherUsers(otherUsers);
+        List<UserVo> friends=new ArrayList<>();
+        otherUsers.forEach(user -> {
+            UserVo vo=new UserVo();
+            vo.setAvatar(user.getAvatar());
+            vo.setEmail(user.getEmail());
+            vo.setUsername(user.getUsername());
+            vo.setUid(user.getUid());
+            friends.add(vo);
+        });
+        loginResVo.setOtherUsers(friends);
         MessageContactVO contactVO = queryContacts(loginUser);
         loginResVo.setContactVO(contactVO);
+        List<AddFriendRequest> addFriendRequestList=userService.queryFriendRequests(uid);
+        loginResVo.setAddFriendRequestList(addFriendRequestList);
         return loginResVo;
     }
 

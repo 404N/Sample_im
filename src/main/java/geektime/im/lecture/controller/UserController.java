@@ -52,8 +52,15 @@ public class UserController {
     }
 
     @PostMapping(path = "/api/addFriendMsg")
-    public ResultBody addFriendMsg(@RequestParam String ownerUid,@RequestParam String otherUid) {
-        userService.addFriendMsg(ownerUid,otherUid);
+    public ResultBody addFriendMsg(@RequestParam String ownerUid,@RequestParam String otherUid,@RequestParam Integer status) {
+        userService.addFriendMsg(ownerUid,otherUid,status);
+        return ResultUtil.success();
+    }
+
+    @PostMapping(path = "/api/updateByUid")
+    public ResultBody updateByUid(@RequestParam String ownerUid) {
+        //更新请求为已读
+        userService.updateFriendRequests(ownerUid);
         return ResultUtil.success();
     }
 }

@@ -13,7 +13,8 @@ public enum CommonEnum implements BaseError {
     ACCOUNT_EXIST("1002","该邮箱已被注册!"),
     ACCOUNT_NOT_EXIST("1003","账号不存在!"),
     ADD_FRIEND_EXIST("1004","已发送过请求!"),
-    NO_LOGIN("1003","账号登陆过期，重新登录!")
+    NO_LOGIN("1005","账号登陆过期，重新登录!"),
+    FRIEND_EXIST("1006","已经是好友!"),
     ;
 
     /** 错误码 */

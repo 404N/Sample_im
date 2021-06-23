@@ -18,10 +18,20 @@
     where owner_id=#{sendUid,jdbcType=VARCHAR} and
           other_id=#{recipientUid,jdbcType=VARCHAR}
   </update>
+  <update id="updateByUid">
+    update add_friend_request
+    set status=1
+    where owner_id=#{uid,jdbcType=VARCHAR}
+  </update>
   <select id="findById" resultType="geektime.im.lecture.entity.AddFriendRequest">
     select *
     from add_friend_request
     where owner_id=#{ownerUid,jdbcType=VARCHAR} and
           other_id=#{otherUid,jdbcType=VARCHAR}
+  </select>
+  <select id="selectByUid" resultType="geektime.im.lecture.entity.AddFriendRequest">
+    select *
+    from add_friend_request
+    where owner_id=#{uid,jdbcType=VARCHAR}
   </select>
 </mapper>

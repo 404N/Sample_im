@@ -1,5 +1,6 @@
 package geektime.im.lecture.service;
 
+import geektime.im.lecture.entity.AddFriendRequest;
 import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.vo.MessageContactVO;
 import geektime.im.lecture.vo.UserVo;
@@ -41,5 +42,19 @@ public interface UserService {
      * @param ownerUid
      * @param otherUid
      */
-    void addFriendMsg(String ownerUid, String otherUid);
+    void addFriendMsg(String ownerUid, String otherUid,Integer status);
+
+    /**
+     * 查找好友请求表的好友请求
+     * @param uid
+     * @return
+     */
+    List<AddFriendRequest> queryFriendRequests(String uid);
+
+    /**
+     * 更新好友请求为已读
+     * @param uid
+     * @return
+     */
+    void updateFriendRequests(String uid);
 }

@@ -3,28 +3,29 @@ package geektime.im.lecture.vo;
 
 import geektime.im.lecture.entity.AddFriendRequest;
 import geektime.im.lecture.entity.ImUser;
+import org.apache.catalina.User;
 
 import java.util.List;
 
 public class LoginResVo {
-    private ImUser loginUser;
-    private List<ImUser> otherUsers;
+    private UserVo loginUser;
+    private List<UserVo> otherUsers;
     private MessageContactVO contactVO;
     private List<AddFriendRequest> addFriendRequestList;
 
-    public ImUser getLoginUser() {
+    public UserVo getLoginUser() {
         return loginUser;
     }
 
-    public void setLoginUser(ImUser loginUser) {
+    public void setLoginUser(UserVo loginUser) {
         this.loginUser = loginUser;
     }
 
-    public List<ImUser> getOtherUsers() {
+    public List<UserVo> getOtherUsers() {
         return otherUsers;
     }
 
-    public void setOtherUsers(List<ImUser> otherUsers) {
+    public void setOtherUsers(List<UserVo> otherUsers) {
         this.otherUsers = otherUsers;
     }
 
