@@ -144,7 +144,6 @@ public class UserServiceImpl implements UserService {
         addFriendRequest.setOwnerName(imUser.getUsername());
         addFriendRequest.setSendTime(currentTime);
         addFriendRequest.setOtherId(otherUid);
-        addFriendRequest.setStatus(0);
         addFriendRequestMapper.insert(addFriendRequest);
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("type", 10);
@@ -184,6 +183,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateFriendRequests(String uid) {
         //根据uid查询所有好友请求
-        addFriendRequestMapper.updateByUid(uid);
+        addFriendRequestMapper.deleteByUid(uid);
     }
 }

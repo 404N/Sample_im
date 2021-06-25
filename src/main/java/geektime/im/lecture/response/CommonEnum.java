@@ -16,6 +16,7 @@ public enum CommonEnum implements BaseError {
     NO_LOGIN("1005","账号登陆过期，重新登录!"),
     FRIEND_EXIST("1006","已经是好友!"),
     GROUP_NOT_EXIST("1007","群聊不存在!"),
+    ALREADY_REQUEST("1008","已经申请过!"),
     ;
 
     /** 错误码 */

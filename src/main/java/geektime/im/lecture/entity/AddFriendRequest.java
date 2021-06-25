@@ -17,7 +17,6 @@ public class AddFriendRequest {
     @Column(name = "other_id")
     private String otherId;
 
-    private Integer status;
 
     @Column(name = "send_time")
     private Date sendTime;
@@ -78,19 +77,6 @@ public class AddFriendRequest {
         this.otherId = otherId;
     }
 
-    /**
-     * @return status
-     */
-    public Integer getStatus() {
-        return status;
-    }
-
-    /**
-     * @param status
-     */
-    public void setStatus(Integer status) {
-        this.status = status;
-    }
 
     /**
      * @return send_time

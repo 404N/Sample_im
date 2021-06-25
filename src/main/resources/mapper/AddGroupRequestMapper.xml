@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="geektime.im.lecture.dao.AddGroupRequestMapper" >
+  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.AddGroupRequest" >
+    <!--
+      WARNING - @mbg.generated
+    -->
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="send_id" property="sendId" jdbcType="VARCHAR" />
+    <result column="group_id" property="groupId" jdbcType="VARCHAR" />
+    <result column="admin_id" property="adminId" jdbcType="VARCHAR" />
+    <result column="send_time" property="sendTime" jdbcType="TIMESTAMP" />
+  </resultMap>
+  <delete id="deleteBySendIdAndGroupId">
+    delete from add_group_request
+    where group_id=#{groupId,jdbcType=VARCHAR} and
+          send_id=#{uid,jdbcType=VARCHAR}
+  </delete>
+  <select id="selectByUidAndGroupId" resultType="geektime.im.lecture.entity.AddGroupRequest">
+    select *
+    from add_group_request
+    where group_id=#{groupId,jdbcType=VARCHAR} and
+          send_id=#{uid,jdbcType=VARCHAR}
+  </select>
+  <select id="queryAddGroupMsg" resultType="geektime.im.lecture.entity.AddGroupRequest">
+    select *
+    from add_group_request
+    where admin_id=#{uid,jdbcType=VARCHAR}
+  </select>
+</mapper>

@@ -1,8 +1,11 @@
 package geektime.im.lecture.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
+import geektime.im.lecture.dao.AddGroupRequestMapper;
 import geektime.im.lecture.dao.ImGroupInfoMapper;
 import geektime.im.lecture.dao.ImGroupMemberMapper;
 import geektime.im.lecture.dao.ImGroupMsgMapper;
+import geektime.im.lecture.entity.AddGroupRequest;
 import geektime.im.lecture.entity.ImGroupInfo;
 import geektime.im.lecture.entity.ImGroupMsg;
 import geektime.im.lecture.entity.ImUser;
@@ -12,6 +15,7 @@ import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.GroupVo;
 import geektime.im.lecture.vo.MessageVO;
+import geektime.im.lecture.ws.handler.WebsocketRouterHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +34,12 @@ public class GroupServiceImpl implements GroupService {
 
     @Autowired
     private ImGroupMemberMapper groupMemberMapper;
+
+    @Autowired
+    private AddGroupRequestMapper addGroupRequestMapper;
+
+    @Autowired
+    private WebsocketRouterHandler websocketRouterHandler;
 
     @Override
     public void createGroup(String userId, String groupName) {
@@ -96,9 +106,31 @@ public class GroupServiceImpl implements GroupService {
     @Override
     public void enterGroup(String groupId, String uid) {
         ImGroupInfo groupInfo=groupInfoRepository.queryGroupByGroupId(groupId);
+        //先查找群聊是否存在
         if(null==groupInfo){
             throw new BaseException(CommonEnum.GROUP_NOT_EXIST);
         }
+        //检测是否已经申请过
+        AddGroupRequest addGroupRequest=addGroupRequestMapper.selectByUidAndGroupId(uid,groupId);
+        if(null!=addGroupRequest){
+            throw new BaseException(CommonEnum.ALREADY_REQUEST);
+        }
+        //将消息存入加群消息申请表
+        addGroupRequest=new AddGroupRequest();
+        addGroupRequest.setGroupId(groupId);
+        addGroupRequest.setAdminId(groupInfo.getGroupUserId());
+        addGroupRequest.setSendId(uid);
+        addGroupRequest.setSendTime(new Date());
+        addGroupRequestMapper.insert(addGroupRequest);
+        JSONObject jsonObject = new JSONObject();
+        jsonObject.put("type", 21);
+        jsonObject.put("data", JSONObject.toJSON(addGroupRequest));
+        //开始推送加群消息
+        websocketRouterHandler.pushAddGroupMsg(groupId,addGroupRequest.getAdminId(),uid,jsonObject);
+    }
 
+    @Override
+    public List<AddGroupRequest> queryAddGroupMsg(String uid) {
+        return addGroupRequestMapper.queryAddGroupMsg(uid);
     }
 }

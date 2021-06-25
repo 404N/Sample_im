@@ -99,4 +99,11 @@ public interface MessageService {
      * @param recipientUid
      */
     void deleteFriendRequest(String sendUid, String recipientUid);
+
+    /**
+     * 删除加群请求
+     * @param sendId
+     * @param groupId
+     */
+    void deleteGroupRequest(String sendId, String groupId);
 }

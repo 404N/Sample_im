@@ -2,6 +2,7 @@ package geektime.im.lecture.vo;
 
 
 import geektime.im.lecture.entity.AddFriendRequest;
+import geektime.im.lecture.entity.AddGroupRequest;
 import geektime.im.lecture.entity.ImUser;
 import org.apache.catalina.User;
 
@@ -12,6 +13,7 @@ public class LoginResVo {
     private List<UserVo> otherUsers;
     private MessageContactVO contactVO;
     private List<AddFriendRequest> addFriendRequestList;
+    private List<AddGroupRequest> addGroupRequestList;
 
     public UserVo getLoginUser() {
         return loginUser;
@@ -43,6 +45,14 @@ public class LoginResVo {
 
     public void setAddFriendRequestList(List<AddFriendRequest> addFriendRequestList) {
         this.addFriendRequestList = addFriendRequestList;
+    }
+
+    public List<AddGroupRequest> getAddGroupRequestList() {
+        return addGroupRequestList;
+    }
+
+    public void setAddGroupRequestList(List<AddGroupRequest> addGroupRequestList) {
+        this.addGroupRequestList = addGroupRequestList;
     }
 
     @Override

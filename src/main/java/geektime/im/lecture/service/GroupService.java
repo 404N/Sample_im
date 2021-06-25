@@ -1,5 +1,6 @@
 package geektime.im.lecture.service;
 
+import geektime.im.lecture.entity.AddGroupRequest;
 import geektime.im.lecture.entity.ImGroupInfo;
 import geektime.im.lecture.entity.ImUser;
 import geektime.im.lecture.vo.GroupMsgVo;
@@ -59,4 +60,11 @@ public interface GroupService {
      * @param uid
      */
     void enterGroup(String groupId, String uid);
+
+    /**
+     * 根据uid查找加入群聊申请
+     * @param uid
+     * @return
+     */
+    List<AddGroupRequest> queryAddGroupMsg(String uid);
 }

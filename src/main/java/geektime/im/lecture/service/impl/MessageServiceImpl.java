@@ -41,6 +41,8 @@ public class MessageServiceImpl implements MessageService {
     private ImGroupMsgMapper groupMsgMapper;
     @Autowired
     private AddFriendRequestMapper addFriendRequestMapper;
+    @Autowired
+    private AddGroupRequestMapper addGroupRequestMapper;
 
     @Override
     @Transactional
@@ -235,10 +237,15 @@ public class MessageServiceImpl implements MessageService {
             friends.add(vo);
         });
         loginResVo.setOtherUsers(friends);
+        //查找最近联系人
         MessageContactVO contactVO = queryContacts(loginUser);
         loginResVo.setContactVO(contactVO);
+        //查找添加好友请求
         List<AddFriendRequest> addFriendRequestList=userService.queryFriendRequests(uid);
         loginResVo.setAddFriendRequestList(addFriendRequestList);
+        //查找加群消息
+        List<AddGroupRequest> addGroupRequestList=groupService.queryAddGroupMsg(uid);
+        loginResVo.setAddGroupRequestList(addGroupRequestList);
         return loginResVo;
     }
 
@@ -312,6 +319,11 @@ public class MessageServiceImpl implements MessageService {
 
     @Override
     public void deleteFriendRequest(String sendUid, String recipientUid) {
-        addFriendRequestMapper.updateFriendRequest(sendUid,recipientUid);
+        addFriendRequestMapper.deleteFriendRequest(sendUid,recipientUid);
+    }
+
+    @Override
+    public void deleteGroupRequest(String sendId, String groupId) {
+        addGroupRequestMapper.deleteBySendIdAndGroupId(sendId,groupId);
     }
 }

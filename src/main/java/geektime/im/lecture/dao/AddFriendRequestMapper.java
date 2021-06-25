@@ -18,11 +18,11 @@ public interface AddFriendRequestMapper extends CustomerMapper<AddFriendRequest>
     AddFriendRequest findById(String ownerUid, String otherUid);
 
     /**
-     * 将好友请求消息设置为已读
+     * 删除好友请求消息缓存
      * @param sendUid
      * @param recipientUid
      */
-    void updateFriendRequest(String sendUid, String recipientUid);
+    void deleteFriendRequest(String sendUid, String recipientUid);
 
     /**
      * 通过uid查询好友申请消息
@@ -32,8 +32,8 @@ public interface AddFriendRequestMapper extends CustomerMapper<AddFriendRequest>
     List<AddFriendRequest> selectByUid(String uid);
 
     /**
-     * 通过uid批量更新消息为已读
+     * 通过uid批量删除缓存消息
      * @param uid
      */
-    void updateByUid(String uid);
+    void deleteByUid(String uid);
 }

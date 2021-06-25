@@ -9,20 +9,17 @@
         <result column="owner_name" property="ownerName" jdbcType="VARCHAR"/>
         <result column="owner_avatar" property="ownerAvatar" jdbcType="VARCHAR"/>
         <result column="other_id" property="otherId" jdbcType="VARCHAR"/>
-        <result column="status" property="status" jdbcType="INTEGER"/>
         <result column="send_time" property="sendTime" jdbcType="DATE"/>
     </resultMap>
-    <update id="updateFriendRequest">
-        update add_friend_request
-        set status=1
+    <delete id="deleteFriendRequest">
+        delete from add_friend_request
         where owner_id = #{sendUid,jdbcType=VARCHAR}
           and other_id = #{recipientUid,jdbcType=VARCHAR}
-    </update>
-    <update id="updateByUid">
-        update add_friend_request
-        set status=1
+    </delete>
+    <delete id="deleteByUid">
+        delete from add_friend_request
         where other_id = #{uid,jdbcType=VARCHAR}
-    </update>
+    </delete>
     <select id="findById" resultType="geektime.im.lecture.entity.AddFriendRequest">
         select *
         from add_friend_request
@@ -32,7 +29,6 @@
     <select id="selectByUid" resultType="geektime.im.lecture.entity.AddFriendRequest">
         select *
         from add_friend_request
-        where other_id = #{uid,jdbcType=VARCHAR} and
-              status = 0
+        where other_id = #{uid,jdbcType=VARCHAR}
     </select>
 </mapper>
