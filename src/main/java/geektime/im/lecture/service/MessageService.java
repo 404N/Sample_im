@@ -43,7 +43,7 @@ public interface MessageService {
 
     /**
      * 查询某个用户的最近联系人
-     * @param ownerUid
+     * @param ownerUser
      * @return
      */
     MessageContactVO queryContacts(ImUser ownerUser);

@@ -21,4 +21,5 @@ public interface ImGroupInfoMapper extends CustomerMapper<ImGroupInfo> {
     List<GroupVo> queryGroupByName(String groupName);
 
     ImGroupInfo queryGroupByGroupId(String groupId);
+
 }

@@ -82,12 +82,14 @@ public class WebsocketRouterHandler extends SimpleChannelInboundHandler<WebSocke
                     String otherUid = data.getString("otherUid");
                     List<MessageVO> messageVO = messageService.queryConversationMsg(ownerUid, otherUid);
                     String msgs = "";
+                    JSONObject json = new JSONObject();
+                    json.put("type", 2);
                     if (messageVO != null) {
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("type", 2);
-                        jsonObject.put("data", JSONArray.toJSON(messageVO));
-                        msgs = jsonObject.toJSONString();
+                        json.put("data", JSONArray.toJSON(messageVO));
+                    }else{
+                        json.put("data", null);
                     }
+                    msgs = json.toJSONString();
                     ctx.writeAndFlush(new TextWebSocketFrame(msgs));
                     break;
 

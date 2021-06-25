@@ -13,6 +13,6 @@
     select *
     from friends_list
     where owner_id=#{ownerUid,jdbcType=VARCHAR} and
-          friend_id=#{ownerUid,jdbcType=VARCHAR}
+          friend_id=#{otherUid,jdbcType=VARCHAR}
   </select>
 </mapper>

@@ -6,6 +6,8 @@ import geektime.im.lecture.dao.ImGroupMsgMapper;
 import geektime.im.lecture.entity.ImGroupInfo;
 import geektime.im.lecture.entity.ImGroupMsg;
 import geektime.im.lecture.entity.ImUser;
+import geektime.im.lecture.exceptions.BaseException;
+import geektime.im.lecture.response.CommonEnum;
 import geektime.im.lecture.service.GroupService;
 import geektime.im.lecture.vo.GroupMsgVo;
 import geektime.im.lecture.vo.GroupVo;
@@ -93,6 +95,10 @@ public class GroupServiceImpl implements GroupService {
 
     @Override
     public void enterGroup(String groupId, String uid) {
+        ImGroupInfo groupInfo=groupInfoRepository.queryGroupByGroupId(groupId);
+        if(null==groupInfo){
+            throw new BaseException(CommonEnum.GROUP_NOT_EXIST);
+        }
 
     }
 }

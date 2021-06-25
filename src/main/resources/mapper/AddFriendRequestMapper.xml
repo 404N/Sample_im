@@ -1,37 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="geektime.im.lecture.dao.AddFriendRequestMapper" >
-  <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.AddFriendRequest" >
-    <!--
-      WARNING - @mbg.generated
-    -->
-    <result column="owner_id" property="ownerId" jdbcType="VARCHAR" />
-    <result column="owner_name" property="ownerName" jdbcType="VARCHAR" />
-    <result column="owner_avatar" property="ownerAvatar" jdbcType="VARCHAR" />
-    <result column="other_id" property="otherId" jdbcType="VARCHAR" />
-    <result column="status" property="status" jdbcType="INTEGER" />
-    <result column="send_time" property="sendTime" jdbcType="DATE" />
-  </resultMap>
-  <update id="updateFriendRequest">
-    update add_friend_request
-    set status=1
-    where owner_id=#{sendUid,jdbcType=VARCHAR} and
-          other_id=#{recipientUid,jdbcType=VARCHAR}
-  </update>
-  <update id="updateByUid">
-    update add_friend_request
-    set status=1
-    where owner_id=#{uid,jdbcType=VARCHAR}
-  </update>
-  <select id="findById" resultType="geektime.im.lecture.entity.AddFriendRequest">
-    select *
-    from add_friend_request
-    where owner_id=#{ownerUid,jdbcType=VARCHAR} and
-          other_id=#{otherUid,jdbcType=VARCHAR}
-  </select>
-  <select id="selectByUid" resultType="geektime.im.lecture.entity.AddFriendRequest">
-    select *
-    from add_friend_request
-    where owner_id=#{uid,jdbcType=VARCHAR}
-  </select>
+<mapper namespace="geektime.im.lecture.dao.AddFriendRequestMapper">
+    <resultMap id="BaseResultMap" type="geektime.im.lecture.entity.AddFriendRequest">
+        <!--
+          WARNING - @mbg.generated
+        -->
+        <result column="owner_id" property="ownerId" jdbcType="VARCHAR"/>
+        <result column="owner_name" property="ownerName" jdbcType="VARCHAR"/>
+        <result column="owner_avatar" property="ownerAvatar" jdbcType="VARCHAR"/>
+        <result column="other_id" property="otherId" jdbcType="VARCHAR"/>
+        <result column="status" property="status" jdbcType="INTEGER"/>
+        <result column="send_time" property="sendTime" jdbcType="DATE"/>
+    </resultMap>
+    <update id="updateFriendRequest">
+        update add_friend_request
+        set status=1
+        where owner_id = #{sendUid,jdbcType=VARCHAR}
+          and other_id = #{recipientUid,jdbcType=VARCHAR}
+    </update>
+    <update id="updateByUid">
+        update add_friend_request
+        set status=1
+        where other_id = #{uid,jdbcType=VARCHAR}
+    </update>
+    <select id="findById" resultType="geektime.im.lecture.entity.AddFriendRequest">
+        select *
+        from add_friend_request
+        where owner_id = #{ownerUid,jdbcType=VARCHAR}
+          and other_id = #{otherUid,jdbcType=VARCHAR}
+    </select>
+    <select id="selectByUid" resultType="geektime.im.lecture.entity.AddFriendRequest">
+        select *
+        from add_friend_request
+        where other_id = #{uid,jdbcType=VARCHAR} and
+              status = 0
+    </select>
 </mapper>

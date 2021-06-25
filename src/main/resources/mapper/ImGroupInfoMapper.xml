@@ -13,7 +13,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
   </resultMap>
   <select id="queryGroupByName" resultType="geektime.im.lecture.vo.GroupVo">
-    select group_id,group_name
+    select group_id,group_name,group_avatar
     from im_group_info
     where group_name like CONCAT('%',#{groupName,jdbcType=VARCHAR},'%')
   </select>

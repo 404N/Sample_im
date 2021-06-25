@@ -158,17 +158,20 @@ public class UserServiceImpl implements UserService {
             throw new BaseException(CommonEnum.FRIEND_EXIST);
         }
         Date currentTime = new Date();
-        FriendsList friendsList=new FriendsList();
-        friendsList.setOwnerId(ownerUid);
-        friendsList.setFriendId(otherUid);
-        friendsList.setCreateTime(currentTime);
-        FriendsList friendsList2=new FriendsList();
-        friendsList.setOwnerId(otherUid);
-        friendsList.setFriendId(ownerUid);
-        friendsList.setCreateTime(currentTime);
-        //双向插入，便于查询
-        friendsListMapper.insert(friendsList);
-        friendsListMapper.insert(friendsList2);
+        //若为1则在好友关系表插入一条记录
+        if(status==1){
+            FriendsList friendsList=new FriendsList();
+            friendsList.setOwnerId(ownerUid);
+            friendsList.setFriendId(otherUid);
+            friendsList.setCreateTime(currentTime);
+            FriendsList friendsList2=new FriendsList();
+            friendsList2.setOwnerId(otherUid);
+            friendsList2.setFriendId(ownerUid);
+            friendsList2.setCreateTime(currentTime);
+            //双向插入，便于查询
+            friendsListMapper.insert(friendsList);
+            friendsListMapper.insert(friendsList2);
+        }
     }
 
     @Override
